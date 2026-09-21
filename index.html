@@ -38,10 +38,34 @@
     @media(max-width:680px){.rental-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.rental-card,.rental-gate{min-height:350px}.rental-card img{height:170px;min-height:170px}.rental-info,.rental-gate .rental-info{min-height:180px;padding:13px}.rental-info h3,.rental-gate .rental-info h3{font-size:.86rem}.rental-info p{font-size:.7rem}.rental-actions{align-items:flex-start;flex-direction:column}.product-modal{padding:18px 10px}.product-copy{padding:28px 20px}.product-media{padding:14px}.product-media img,.product-dialog.is-landscape .product-media img{max-height:70vh}.lightbox{padding:70px 12px 70px}.lightbox-img{max-width:96vw;max-height:calc(100vh - 170px)}.lightbox-prev,.lightbox-next{top:auto;bottom:14px}.lightbox-prev{left:calc(50% - 62px)}.lightbox-next{right:calc(50% - 62px)}}
     @media(max-width:420px){.rental-grid{grid-template-columns:1fr}.rental-card,.rental-gate{min-height:390px}.rental-card img{height:210px;min-height:210px}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.reveal{opacity:1;transform:none}}
+    /* Auth UI */
+    .user-menu{position:relative;display:flex;align-items:center;margin-left:12px;}
+    .user-btn{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.1);display:grid;place-items:center;cursor:pointer;border:1px solid transparent;transition:.25s;}
+    .user-btn:hover{background:rgba(63,185,130,.2);border-color:var(--emerald);}
+    .user-btn svg{width:20px;height:20px;color:var(--white);}
+    .user-dropdown{position:absolute;top:calc(100% + 10px);right:0;width:220px;background:var(--navy2);border:1px solid var(--line);border-radius:8px;padding:10px 0;opacity:0;visibility:hidden;transform:translateY(10px);transition:.25s;box-shadow:0 10px 30px rgba(0,0,0,.5);}
+    .user-dropdown.show{opacity:1;visibility:visible;transform:translateY(0);}
+    .user-info{padding:10px 20px;border-bottom:1px solid var(--line);margin-bottom:10px;}
+    .user-info span{display:block;font-size:0.85rem;color:var(--muted);}
+    .user-info strong{display:block;font-size:1rem;color:var(--white);}
+    .dropdown-item{display:block;padding:10px 20px;color:var(--white);font-size:0.9rem;cursor:pointer;background:transparent;border:none;width:100%;text-align:left;}
+    .dropdown-item:hover{background:rgba(255,255,255,.05);color:var(--emerald);}
+    .dropdown-item.logout{color:#e74c3c;}
+    .dropdown-item.logout:hover{background:rgba(231,76,60,.1);}
+    
+    .auth-modal{position:fixed;inset:0;z-index:1200;display:flex;align-items:center;justify-content:center;background:rgba(2,10,18,.9);backdrop-filter:blur(8px);opacity:0;visibility:hidden;transition:.3s;}
+    .auth-modal.open{opacity:1;visibility:visible;}
+    .auth-box{width:90%;max-width:400px;background:var(--navy);border:1px solid var(--line);border-radius:12px;padding:30px;position:relative;transform:translateY(20px);transition:.3s;}
+    .auth-modal.open .auth-box{transform:translateY(0);}
+    .auth-close{position:absolute;top:15px;right:15px;background:transparent;border:none;color:var(--muted);font-size:1.5rem;cursor:pointer;}
+    .auth-close:hover{color:var(--white);}
+    .auth-box h3{margin:0 0 20px;font-size:1.5rem;text-align:center;}
+    .auth-form .field{margin-bottom:15px;}
+    .auth-error{color:#e74c3c;font-size:0.85rem;margin-bottom:15px;text-align:center;display:none;}
   </style>
 </head>
 <body>
-  <header class="header" id="header"><div class="container nav"><a class="brand" href="#top" aria-label="SkillLink - về đầu trang"><img src="LOGO.png" alt="SkillLink"></a><nav class="nav-links" id="nav-links" aria-label="Điều hướng chính"><a href="#top">Trang chủ</a><a href="#about">Giới thiệu</a><a href="#services">Dịch vụ</a><a href="#rentals">Thuê thiết bị</a><a href="#projects">Dự án</a><a href="#process">Quy trình</a><a href="#partners">Đối tác</a><a href="#contact">Liên hệ</a></nav><a class="nav-cta" href="#contact">Nhận báo giá</a><button class="menu-toggle" aria-label="Mở menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span></button></div></header>
+  <header class="header" id="header"><div class="container nav"><a class="brand" href="#top" aria-label="SkillLink - về đầu trang"><img src="LOGO.png" alt="SkillLink"></a><nav class="nav-links" id="nav-links" aria-label="Điều hướng chính"><a href="#top">Trang chủ</a><a href="#about">Giới thiệu</a><a href="#services">Dịch vụ</a><a href="#rentals">Thuê thiết bị</a><a href="#projects">Dự án</a><a href="#process">Quy trình</a><a href="#partners">Đối tác</a><a href="#contact">Liên hệ</a></nav><a class="nav-cta" href="#contact">Nhận báo giá</a><div class="user-menu"><button class="user-btn" id="user-btn" aria-label="Tài khoản"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></button><div class="user-dropdown" id="user-dropdown"><div class="user-info"><span>Xin chào,</span><strong id="user-fullname">Khách</strong></div><button class="dropdown-item" id="btn-checkin">Điểm danh vào ca</button><button class="dropdown-item" id="btn-checkout">Điểm danh ra ca</button><a href="admin.html" class="dropdown-item" id="btn-admin-panel" style="display:none;">Trang Quản Trị</a><button class="dropdown-item logout" id="btn-logout">Đăng xuất</button></div></div><button class="menu-toggle" aria-label="Mở menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span></button></div></header>
   <main id="top">
     <section class="hero" aria-label="Giới thiệu SkillLink"><div class="container hero-content"><p class="hero-kicker">Event Agency · Cần Thơ</p><img class="hero-logo" src="ảnh logo hero.png" alt="SkillLink Event Agency"><p class="hero-tagline"><span>Kết nối tài năng</span><span>Kiến tạo trải nghiệm</span></p><div class="actions"><a class="btn btn-primary" href="#contact">Nhận tư vấn <span aria-hidden="true">↗</span></a><a class="btn btn-secondary" href="#projects">Xem dự án</a></div></div><a class="hero-scroll" href="#about">Khám phá SkillLink</a></section>
     <section class="section about" id="about"><div class="container about-grid"><div class="about-copy reveal"><p class="eyebrow">Về SkillLink</p><h2>Không chỉ tổ chức sự kiện. Chúng tôi kết nối những mảnh ghép xuất sắc.</h2><p>SkillLink kết nối những nhà sáng tạo, chuyên gia kỹ thuật, nghệ sĩ và đội ngũ vận hành để biến ý tưởng thành những trải nghiệm đáng nhớ — đúng tinh thần thương hiệu, đúng mục tiêu và đúng tiến độ.</p><div class="about-note"><div><strong>Am hiểu bản địa</strong><span>Cần Thơ &amp; thị trường Mekong</span></div><div><strong>Vận hành toàn diện</strong><span>Từ ý tưởng đến nghiệm thu</span></div></div></div></div></section>
@@ -55,7 +79,27 @@
   </main>
   <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Xem ảnh dự án" aria-hidden="true"><button class="lightbox-close" type="button" aria-label="Đóng ảnh phóng to">×</button><button class="lightbox-prev" type="button" aria-label="Ảnh dự án trước">‹</button><figure class="lightbox-figure"><img class="lightbox-img" src="" alt=""><figcaption class="lightbox-caption"></figcaption></figure><button class="lightbox-next" type="button" aria-label="Ảnh dự án tiếp theo">›</button></div>
   <div class="product-modal" id="product-modal" role="dialog" aria-modal="true" aria-labelledby="product-title" aria-hidden="true"><div class="product-dialog"><button class="product-close" type="button" aria-label="Đóng thông tin sản phẩm">×</button><div class="product-content"><div class="product-media"><img id="product-image" src="" alt=""></div><div class="product-copy"><p class="eyebrow">Thuê thiết bị</p><h2 id="product-title"></h2><p id="product-description"></p><div id="product-details"></div><div class="product-contact"><a class="btn btn-primary" href="https://zalo.me/0704747834" target="_blank" rel="noopener noreferrer">Nhận báo giá qua Zalo ↗</a><a class="btn btn-secondary" href="tel:0704747834">Gọi 070 474 7834</a></div></div></div></div></div>
+  <div class="auth-modal" id="auth-modal">
+    <div class="auth-box">
+      <button class="auth-close" id="auth-close">&times;</button>
+      <h3>Đăng nhập nội bộ</h3>
+      <div class="auth-error" id="auth-error"></div>
+      <form class="auth-form" id="auth-form">
+        <div class="field">
+          <label>Tên đăng nhập</label>
+          <input type="text" id="auth-username" required>
+        </div>
+        <div class="field">
+          <label>Mật khẩu</label>
+          <input type="password" id="auth-password" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;margin-top:10px;">Đăng nhập</button>
+      </form>
+    </div>
+  </div>
+
   <footer><div class="container"><div class="footer-grid"><div class="footer-brand"><img src="LOGO.png" alt="SkillLink"><p>Kết nối tài năng — Kiến tạo trải nghiệm.</p></div><div class="footer-links"><strong>Khám phá</strong><a href="#about">Giới thiệu</a><a href="#services">Dịch vụ</a><a href="#rentals">Thuê thiết bị</a><a href="#projects">Dự án</a><a href="#process">Quy trình</a></div><div class="footer-links"><strong>Kết nối</strong><a href="HỒ SƠ NĂNG LỰC SKILLLINK A4 NGANG.pdf" target="_blank" rel="noopener">Hồ sơ năng lực</a><div class="socials" aria-label="Mạng xã hội SkillLink"><a class="social-link" href="https://www.facebook.com/profile.php?id=61581810543842&amp;locale=vi_VN" target="_blank" rel="noopener noreferrer" aria-label="Mở Facebook SkillLink" title="Facebook">f</a><a class="social-link" href="https://zalo.me/0704747834" target="_blank" rel="noopener noreferrer" aria-label="Mở Zalo SkillLink" title="Zalo">Z</a></div></div></div><div class="copyright"><span>© <span id="year"></span> SkillLink Event Agency. All rights reserved.</span></div></div></footer>
+  <script src="assets/js/auth.js"></script>
   <script>
     const sharedCommitments=['Thiết bị được kiểm tra trước khi bàn giao.','Sản phẩm chắc chắn, an toàn và được vệ sinh sạch sẽ.','Số lượng linh hoạt theo quy mô chương trình.','Hỗ trợ vận chuyển, lắp đặt và vận hành theo yêu cầu.','Tư vấn thiết bị phù hợp với từng sự kiện.'];
     const products=[
