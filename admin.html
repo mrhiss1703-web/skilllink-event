@@ -33,6 +33,10 @@
         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
         Quản lý điểm danh
       </button>
+      <button onclick="switchTab('worklogs')" id="tab-worklogs" class="nav-item w-full flex items-center px-4 py-3 rounded-lg text-left transition-colors text-gray-300 hover:bg-gray-800">
+        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        Nhật ký đầu việc
+      </button>
       <button onclick="switchTab('settings')" id="tab-settings" class="nav-item w-full flex items-center px-4 py-3 rounded-lg text-left transition-colors text-gray-300 hover:bg-gray-800">
         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
         Cấu hình điểm danh
@@ -129,6 +133,7 @@
             <thead>
               <tr class="bg-gray-50 text-gray-500 text-sm uppercase tracking-wider border-b border-gray-200">
                 <th class="px-6 py-4 font-medium">Nhân Viên</th>
+                <th class="px-6 py-4 font-medium">Ngày</th>
                 <th class="px-6 py-4 font-medium">Ca Làm</th>
                 <th class="px-6 py-4 font-medium">Giờ Check-in</th>
                 <th class="px-6 py-4 font-medium">Giờ Check-out</th>
@@ -136,6 +141,36 @@
               </tr>
             </thead>
             <tbody id="attendance-tbody" class="divide-y divide-gray-200">
+              <!-- Rows will be injected here -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- WorkLogs Section -->
+      <section id="sec-worklogs" class="hidden animate-fade-in">
+        <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+          <p class="text-gray-500">Nhật ký đầu việc hàng ngày của nhân viên</p>
+          <div class="flex flex-wrap gap-3">
+            <input type="date" id="wl-filter-date" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <select id="wl-filter-employee" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              <option value="">-- Tất cả nhân viên --</option>
+            </select>
+            <button onclick="applyWorklogFilter()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm shadow-sm transition-colors">Lọc</button>
+            <button onclick="loadWorkLogs()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium text-sm shadow-sm transition-colors">Tất cả</button>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-gray-50 text-gray-500 text-sm uppercase tracking-wider border-b border-gray-200">
+                <th class="px-6 py-4 font-medium">Nhân Viên</th>
+                <th class="px-6 py-4 font-medium">Ngày</th>
+                <th class="px-6 py-4 font-medium">Danh sách đầu việc</th>
+                <th class="px-6 py-4 font-medium">Số mục</th>
+              </tr>
+            </thead>
+            <tbody id="worklog-tbody" class="divide-y divide-gray-200">
               <!-- Rows will be injected here -->
             </tbody>
           </table>
@@ -214,8 +249,13 @@
           <input type="text" id="emp-username" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none">
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu (Để trống nếu không đổi)</label>
-          <input type="password" id="emp-password" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu <span class="text-gray-400 font-normal">(mặc định: skilllink123)</span></label>
+          <div class="relative">
+            <input type="password" id="emp-password" class="w-full border border-gray-300 rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Để trống = giữ mật khẩu mặc định">
+            <button type="button" id="toggle-emp-pwd" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700" aria-label="Hiện/ẩn mật khẩu">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            </button>
+          </div>
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>

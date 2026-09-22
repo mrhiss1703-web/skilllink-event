@@ -23,6 +23,19 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('form-shift').addEventListener('submit', handleShiftSubmit);
   document.getElementById('form-settings').addEventListener('submit', handleSettingsSubmit);
 
+  // Toggle password visibility in employee modal
+  const toggleEmpPwd = document.getElementById('toggle-emp-pwd');
+  const empPwdInput = document.getElementById('emp-password');
+  if (toggleEmpPwd && empPwdInput) {
+    toggleEmpPwd.addEventListener('click', () => {
+      const isHidden = empPwdInput.type === 'password';
+      empPwdInput.type = isHidden ? 'text' : 'password';
+      toggleEmpPwd.innerHTML = isHidden
+        ? `<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 4.411m0 0L21 21"/></svg>`
+        : `<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>`;
+    });
+  }
+
   const btnGetLoc = document.getElementById('btn-get-location');
   if (btnGetLoc) {
     btnGetLoc.addEventListener('click', () => {
@@ -54,8 +67,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // --- Tab Navigation ---
 function switchTab(tabName) {
-  const tabs = ['employees', 'shifts', 'attendance', 'settings'];
-  
+  const tabs = ['employees', 'shifts', 'attendance', 'worklogs', 'settings'];
+
   tabs.forEach(t => {
     document.getElementById(`sec-${t}`).classList.add('hidden');
     document.getElementById(`tab-${t}`).classList.remove('active', 'bg-blue-600', 'text-white');
@@ -76,6 +89,10 @@ function switchTab(tabName) {
   } else if (tabName === 'attendance') {
     document.getElementById('page-title').textContent = 'Quản lý điểm danh';
     loadAttendances();
+  } else if (tabName === 'worklogs') {
+    document.getElementById('page-title').textContent = 'Nhật ký đầu việc';
+    loadWorkLogs();
+    loadWorklogEmployeeFilter();
   } else if (tabName === 'settings') {
     document.getElementById('page-title').textContent = 'Cấu hình điểm danh';
     loadSettings();
@@ -91,7 +108,13 @@ function closeModals() {
 function openEmployeeModal(emp = null) {
   document.getElementById('form-employee').reset();
   document.getElementById('emp-id').value = emp ? emp._id : '';
-  
+
+  // Reset password toggle icon
+  const empPwdInput = document.getElementById('emp-password');
+  const toggleEmpPwd = document.getElementById('toggle-emp-pwd');
+  if (empPwdInput) empPwdInput.type = 'password';
+  if (toggleEmpPwd) toggleEmpPwd.innerHTML = `<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>`;
+
   if (emp) {
     document.getElementById('emp-modal-title').textContent = 'Cập nhật Nhân Viên';
     document.getElementById('emp-fullname').value = emp.fullName;
@@ -101,12 +124,14 @@ function openEmployeeModal(emp = null) {
     document.getElementById('emp-phone').value = emp.phone || '';
     document.getElementById('emp-active').checked = emp.isActive;
     document.getElementById('emp-password').required = false;
+    document.getElementById('emp-password').value = '';
   } else {
     document.getElementById('emp-modal-title').textContent = 'Thêm Nhân Viên';
     document.getElementById('emp-username').readOnly = false;
-    document.getElementById('emp-password').required = true;
+    document.getElementById('emp-password').required = false;
+    document.getElementById('emp-password').value = 'skilllink123';
   }
-  
+
   document.getElementById('modal-employee').classList.remove('hidden');
 }
 
@@ -254,13 +279,15 @@ function renderAttendances(list) {
   const tbody = document.getElementById('attendance-tbody');
   tbody.innerHTML = '';
   list.forEach(att => {
-    const sDate = att.shiftId ? new Date(att.shiftId.date).toLocaleDateString('vi-VN') : '';
+    const dateStr = att.date
+      ? att.date.split('-').reverse().join('/')
+      : (att.shiftId ? new Date(att.shiftId.date).toLocaleDateString('vi-VN') : '--');
     const sTime = att.shiftId ? new Date(att.shiftId.startTime).toTimeString().substring(0, 5) : '';
     const eTime = att.shiftId ? new Date(att.shiftId.endTime).toTimeString().substring(0, 5) : '';
-    
+
     const checkIn = att.checkInTime ? new Date(att.checkInTime).toLocaleString('vi-VN') : '--';
     const checkOut = att.checkOutTime ? new Date(att.checkOutTime).toLocaleString('vi-VN') : '--';
-    
+
     let statusBadge = '';
     if (att.status === 'present') statusBadge = `<span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">Đúng giờ</span>`;
     else if (att.status === 'late') statusBadge = `<span class="px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-medium">Đi trễ</span>`;
@@ -275,13 +302,79 @@ function renderAttendances(list) {
         <div class="font-medium text-gray-900">${att.employeeId?.fullName || 'N/A'}</div>
         <div class="text-xs text-gray-500">${att.employeeId?.username || ''}</div>
       </td>
+      <td class="px-6 py-4 text-gray-600">${dateStr}</td>
       <td class="px-6 py-4">
-        <div class="text-gray-900">${att.shiftId?.shiftName || 'N/A'}</div>
-        <div class="text-xs text-gray-500">${sDate} | ${sTime}-${eTime}</div>
+        <div class="text-gray-900">${att.shiftId?.shiftName || 'Tự do'}</div>
+        ${sTime && eTime ? `<div class="text-xs text-gray-500">${sTime} - ${eTime}</div>` : ''}
       </td>
       <td class="px-6 py-4 text-gray-600">${checkIn}</td>
       <td class="px-6 py-4 text-gray-600">${checkOut}</td>
       <td class="px-6 py-4">${statusBadge}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// --- WorkLog Functions ---
+async function loadWorkLogs(params = {}) {
+  try {
+    const query = new URLSearchParams(params).toString();
+    const res = await fetch(`${API_URL}/worklog${query ? '?' + query : ''}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (res.ok) renderWorkLogs(data.data);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function applyWorklogFilter() {
+  const date = document.getElementById('wl-filter-date')?.value || '';
+  const employeeId = document.getElementById('wl-filter-employee')?.value || '';
+  const params = {};
+  if (date) params.date = date;
+  if (employeeId) params.employeeId = employeeId;
+  loadWorkLogs(params);
+}
+
+async function loadWorklogEmployeeFilter() {
+  const select = document.getElementById('wl-filter-employee');
+  if (!select) return;
+  select.innerHTML = '<option value="">-- Tất cả nhân viên --</option>';
+  allEmployees.forEach(emp => {
+    select.innerHTML += `<option value="${emp._id}">${emp.fullName} (${emp.username})</option>`;
+  });
+}
+
+function renderWorkLogs(logs) {
+  const tbody = document.getElementById('worklog-tbody');
+  tbody.innerHTML = '';
+  if (!logs || logs.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-8 text-center text-gray-400">Chưa có nhật ký đầu việc nào</td></tr>';
+    return;
+  }
+  logs.forEach(log => {
+    const dateParts = log.date ? log.date.split('-') : [];
+    const dateDisplay = dateParts.length === 3 ? `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}` : log.date;
+    const tasksList = log.tasks.map(t =>
+      `<li class="text-sm text-gray-700">• ${t.content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</li>`
+    ).join('');
+
+    const tr = document.createElement('tr');
+    tr.className = 'hover:bg-gray-50 transition-colors';
+    tr.innerHTML = `
+      <td class="px-6 py-4">
+        <div class="font-medium text-gray-900">${log.employeeId?.fullName || 'N/A'}</div>
+        <div class="text-xs text-gray-500">${log.employeeId?.username || ''}</div>
+      </td>
+      <td class="px-6 py-4 text-gray-600 whitespace-nowrap">${dateDisplay}</td>
+      <td class="px-6 py-4">
+        <ul class="space-y-1">${tasksList || '<span class="text-gray-400 text-sm">Không có đầu việc</span>'}</ul>
+      </td>
+      <td class="px-6 py-4">
+        <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">${log.tasks.length} mục</span>
+      </td>
     `;
     tbody.appendChild(tr);
   });
