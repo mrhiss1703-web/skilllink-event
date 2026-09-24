@@ -91,8 +91,7 @@ function switchTab(tabName) {
     loadAttendances();
   } else if (tabName === 'worklogs') {
     document.getElementById('page-title').textContent = 'Nhật ký đầu việc';
-    loadWorkLogs();
-    loadWorklogEmployeeFilter();
+    initWorklogTab();
   } else if (tabName === 'settings') {
     document.getElementById('page-title').textContent = 'Cấu hình điểm danh';
     loadSettings();
@@ -550,4 +549,138 @@ async function deleteShift(id) {
   } catch (err) {
     alert('Lỗi hệ thống');
   }
+}
+
+// --- Worklog Filter Tab ---
+let cachedEmployeesList = [];
+
+async function initWorklogTab() {
+  await loadWorklogEmployeeFilter();
+  const select = document.getElementById('wl-filter-employee');
+  if (select && select.value) {
+    onWorklogEmployeeChange();
+  } else {
+    const placeholder = document.getElementById('worklog-placeholder');
+    const details = document.getElementById('worklog-details');
+    if (placeholder) placeholder.classList.remove('hidden');
+    if (details) details.classList.add('hidden');
+  }
+}
+
+async function loadWorklogEmployeeFilter() {
+  const select = document.getElementById('wl-filter-employee');
+  if (!select) return;
+  try {
+    const res = await fetch(`${API_URL}/employees`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (res.ok && data.data) {
+      cachedEmployeesList = data.data;
+      const currentVal = select.value;
+      select.innerHTML = '<option value="">-- Chọn nhân viên để xem nhật ký --</option>' +
+        data.data.map(emp => `<option value="${emp._id}">${emp.fullName} (@${emp.username})</option>`).join('');
+      if (currentVal) select.value = currentVal;
+    }
+  } catch (err) {
+    console.error('Lỗi tải danh sách nhân viên lọc nhật ký:', err);
+  }
+}
+
+async function onWorklogEmployeeChange() {
+  const empId = document.getElementById('wl-filter-employee').value;
+  const date = document.getElementById('wl-filter-date').value;
+
+  if (!empId) {
+    document.getElementById('worklog-placeholder').classList.remove('hidden');
+    document.getElementById('worklog-details').classList.add('hidden');
+    return;
+  }
+
+  const emp = cachedEmployeesList.find(e => e._id === empId);
+  if (emp) {
+    document.getElementById('wl-emp-name').textContent = emp.fullName;
+    document.getElementById('wl-emp-username').textContent = `@${emp.username} · ${emp.role === 'admin' ? 'Quản trị viên' : 'Nhân viên / Thực tập sinh'}`;
+    document.getElementById('wl-emp-avatar').textContent = (emp.fullName || 'NV').slice(0, 2).toUpperCase();
+  }
+
+  document.getElementById('worklog-placeholder').classList.add('hidden');
+  document.getElementById('worklog-details').classList.remove('hidden');
+
+  let url = `${API_URL}/worklog?employeeId=${empId}`;
+  if (date) url += `&date=${date}`;
+
+  try {
+    const tbody = document.getElementById('worklog-tbody');
+    tbody.innerHTML = '<tr><td colspan="3" class="px-6 py-6 text-center text-gray-400">Đang tải dữ liệu nhật ký...</td></tr>';
+
+    const res = await fetch(url, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    const logs = data.data || [];
+
+    let totalTasks = 0;
+    logs.forEach(l => { totalTasks += (l.tasks?.length || 0); });
+
+    document.getElementById('wl-emp-days-count').textContent = `${logs.length} ngày làm việc`;
+    document.getElementById('wl-emp-tasks-count').textContent = `${totalTasks} đầu việc đã ghi`;
+
+    if (logs.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="3" class="px-6 py-8 text-center text-gray-500">
+        <p class="font-medium text-gray-600 mb-1">Không tìm thấy nhật ký công việc nào</p>
+        <p class="text-xs text-gray-400">${date ? 'Nhân viên này không có đầu việc nào trong ngày ' + date : 'Nhân viên này chưa ghi nhận đầu việc nào'}</p>
+      </td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = logs.map(log => {
+      const tasks = log.tasks || [];
+      const tasksHtml = tasks.length === 0
+        ? '<span class="text-xs text-gray-400 italic">Không có đầu việc</span>'
+        : `<ul class="space-y-1.5">${tasks.map(t => `<li class="flex items-start gap-2 text-sm text-gray-800"><span class="text-emerald-500 font-bold mt-0.5">•</span><span>${escapeHtml(t.content)}</span></li>`).join('')}</ul>`;
+
+      return `
+        <tr class="hover:bg-gray-50 transition-colors">
+          <td class="px-6 py-4 font-semibold text-gray-700 text-sm whitespace-nowrap">
+            📅 ${formatDateVN(log.date)}
+          </td>
+          <td class="px-6 py-4">
+            ${tasksHtml}
+          </td>
+          <td class="px-6 py-4 text-center">
+            <span class="px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded-full">${tasks.length}</span>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  } catch (err) {
+    console.error('Lỗi tải nhật ký:', err);
+    document.getElementById('worklog-tbody').innerHTML = '<tr><td colspan="3" class="px-6 py-6 text-center text-red-500">Lỗi khi tải nhật ký công việc</td></tr>';
+  }
+}
+
+function onWorklogDateChange() {
+  const empId = document.getElementById('wl-filter-employee').value;
+  if (empId) {
+    onWorklogEmployeeChange();
+  }
+}
+
+function resetWorklogFilter() {
+  document.getElementById('wl-filter-employee').value = '';
+  document.getElementById('wl-filter-date').value = '';
+  document.getElementById('worklog-placeholder').classList.remove('hidden');
+  document.getElementById('worklog-details').classList.add('hidden');
+}
+
+function formatDateVN(dateStr) {
+  if (!dateStr) return '';
+  const parts = dateStr.split('-');
+  if (parts.length !== 3) return dateStr;
+  return `${parts[2]}/${parts[1]}/${parts[0]}`;
+}
+
+function escapeHtml(t) {
+  return (t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }

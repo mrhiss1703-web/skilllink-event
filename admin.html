@@ -150,30 +150,59 @@
       <!-- WorkLogs Section -->
       <section id="sec-worklogs" class="hidden animate-fade-in">
         <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
-          <p class="text-gray-500">Nhật ký đầu việc hàng ngày của nhân viên</p>
-          <div class="flex flex-wrap gap-3">
-            <input type="date" id="wl-filter-date" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-            <select id="wl-filter-employee" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-              <option value="">-- Tất cả nhân viên --</option>
+          <div>
+            <h3 class="text-base font-semibold text-gray-800">Nhật ký công việc nhân viên</h3>
+            <p class="text-sm text-gray-500">Chọn nhân viên để xem chi tiết các đầu việc đã thực hiện</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <select id="wl-filter-employee" onchange="onWorklogEmployeeChange()" class="border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none bg-white shadow-sm min-w-[240px]">
+              <option value="">-- Chọn nhân viên để xem --</option>
             </select>
-            <button onclick="applyWorklogFilter()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm shadow-sm transition-colors">Lọc</button>
-            <button onclick="loadWorkLogs()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium text-sm shadow-sm transition-colors">Tất cả</button>
+            <input type="date" id="wl-filter-date" onchange="onWorklogDateChange()" title="Lọc theo ngày (tùy chọn)" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none shadow-sm">
+            <button onclick="resetWorklogFilter()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg font-medium text-sm transition-colors shadow-sm">Xóa bộ lọc</button>
           </div>
         </div>
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <table class="w-full text-left border-collapse">
-            <thead>
-              <tr class="bg-gray-50 text-gray-500 text-sm uppercase tracking-wider border-b border-gray-200">
-                <th class="px-6 py-4 font-medium">Nhân Viên</th>
-                <th class="px-6 py-4 font-medium">Ngày</th>
-                <th class="px-6 py-4 font-medium">Danh sách đầu việc</th>
-                <th class="px-6 py-4 font-medium">Số mục</th>
-              </tr>
-            </thead>
-            <tbody id="worklog-tbody" class="divide-y divide-gray-200">
-              <!-- Rows will be injected here -->
-            </tbody>
-          </table>
+
+        <!-- Worklog Container -->
+        <div id="worklog-container" class="space-y-4">
+          <!-- Initial Placeholder: No Employee Selected -->
+          <div id="worklog-placeholder" class="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
+            <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">🔍</div>
+            <h4 class="text-lg font-semibold text-gray-800 mb-1">Chưa chọn nhân viên</h4>
+            <p class="text-sm text-gray-500 max-w-md mx-auto">Vui lòng chọn một nhân viên từ danh sách ở trên để xem nhật ký công việc của họ.</p>
+          </div>
+
+          <!-- Employee Worklog Details (shown when employee selected) -->
+          <div id="worklog-details" class="hidden space-y-4">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex flex-wrap items-center justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <div class="w-11 h-11 bg-emerald-100 text-emerald-700 font-bold rounded-full flex items-center justify-center text-lg" id="wl-emp-avatar">NV</div>
+                <div>
+                  <h4 class="font-bold text-gray-800 text-base" id="wl-emp-name">Nguyễn Văn A</h4>
+                  <p class="text-xs text-gray-500" id="wl-emp-username">@username</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="px-3 py-1.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-xs font-semibold" id="wl-emp-days-count">0 ngày làm việc</span>
+                <span class="px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-semibold" id="wl-emp-tasks-count">0 đầu việc</span>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider border-b border-gray-200">
+                    <th class="px-6 py-3 font-semibold w-44">Ngày</th>
+                    <th class="px-6 py-3 font-semibold">Danh sách đầu việc đã làm</th>
+                    <th class="px-6 py-3 font-semibold w-28 text-center">Số lượng</th>
+                  </tr>
+                </thead>
+                <tbody id="worklog-tbody" class="divide-y divide-gray-200">
+                  <!-- Rows will be injected here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </section>
 

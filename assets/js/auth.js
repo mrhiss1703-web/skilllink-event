@@ -13,15 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnCheckin = document.getElementById('btn-checkin');
   const btnCheckout = document.getElementById('btn-checkout');
   const btnAdminPanel = document.getElementById('btn-admin-panel');
+  const btnWorklogPage = document.getElementById('btn-worklog-page');
   const btnLogout = document.getElementById('btn-logout');
-  const worklogSection = document.getElementById('worklog-section');
-  const worklogList = document.getElementById('worklog-list');
-  const worklogInput = document.getElementById('worklog-input');
-  const worklogAddBtn = document.getElementById('worklog-add-btn');
 
   let currentUser = JSON.parse(localStorage.getItem('skilllink_user') || 'null');
   let token = localStorage.getItem('skilllink_token');
-  let todayLogId = null;
 
   // Initial UI state
   updateUI();
@@ -45,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
       userDropdown.classList.toggle('show');
       if (userDropdown.classList.contains('show')) {
         fetchMyAttendanceToday();
-        fetchMyWorkLog();
       }
     } else {
       authModal.classList.add('open');
@@ -104,7 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.removeItem('skilllink_user');
     token = null;
     currentUser = null;
-    todayLogId = null;
     userDropdown.classList.remove('show');
     updateUI();
   });
@@ -124,7 +118,6 @@ document.addEventListener('DOMContentLoaded', () => {
       btnCheckout.style.display = 'block';
 
       if (!record) {
-        // Not checked in yet
         btnCheckin.textContent = 'Điểm danh vào';
         btnCheckin.disabled = false;
         btnCheckin.classList.remove('opacity-50', 'cursor-not-allowed');
@@ -132,7 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btnCheckout.disabled = true;
         btnCheckout.classList.add('opacity-50', 'cursor-not-allowed');
       } else if (record.checkInTime && !record.checkOutTime) {
-        // Checked in, not out yet
         const ciTime = new Date(record.checkInTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
         btnCheckin.textContent = `✓ Đã vào lúc ${ciTime}`;
         btnCheckin.disabled = true;
@@ -141,7 +133,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btnCheckout.disabled = false;
         btnCheckout.classList.remove('opacity-50', 'cursor-not-allowed');
       } else if (record.checkInTime && record.checkOutTime) {
-        // Both done
         const ciTime = new Date(record.checkInTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
         const coTime = new Date(record.checkOutTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
         btnCheckin.textContent = `✓ Vào ${ciTime}`;
@@ -156,7 +147,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Helper: get geolocation
   function getLocation() {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
@@ -178,7 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
       btnCheckin.textContent = 'Đang lấy vị trí...';
       location = await getLocation();
     } catch (err) {
-      // Location not available - proceed without it (server will decide)
       location = {};
     }
 
@@ -189,18 +178,12 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify({ lat: location.lat, lng: location.lng })
       });
       const data = await res.json();
-      if (res.ok) {
-        alert(data.message);
-        await fetchMyAttendanceToday();
-      } else {
-        alert(data.message);
-        btnCheckin.disabled = false;
-        btnCheckin.textContent = 'Điểm danh vào';
-      }
+      alert(data.message);
+      await fetchMyAttendanceToday();
     } catch (err) {
       alert('Lỗi kết nối');
+    } finally {
       btnCheckin.disabled = false;
-      btnCheckin.textContent = 'Điểm danh vào';
     }
   });
 
@@ -215,139 +198,28 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify({})
       });
       const data = await res.json();
-      if (res.ok) {
-        alert(data.message);
-        await fetchMyAttendanceToday();
-      } else {
-        alert(data.message);
-        btnCheckout.disabled = false;
-        btnCheckout.textContent = 'Điểm danh ra';
-      }
+      alert(data.message);
+      await fetchMyAttendanceToday();
     } catch (err) {
       alert('Lỗi kết nối');
+    } finally {
       btnCheckout.disabled = false;
-      btnCheckout.textContent = 'Điểm danh ra';
     }
   });
-
-  // --- Work Log ---
-  async function fetchMyWorkLog() {
-    if (!token || !worklogList) return;
-    try {
-      const res = await fetch(`${API_URL}/worklog/me/today`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (!res.ok) return;
-      const data = await res.json();
-      const log = data.data;
-      todayLogId = log?._id || null;
-      renderWorkLog(log?.tasks || []);
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  function renderWorkLog(tasks) {
-    if (!worklogList) return;
-    if (tasks.length === 0) {
-      worklogList.innerHTML = '<li class="wl-empty">Chưa có đầu việc nào hôm nay</li>';
-      return;
-    }
-    worklogList.innerHTML = tasks.map(task => `
-      <li class="wl-task" data-task-id="${task._id}">
-        <span class="wl-task-content">${escapeHtml(task.content)}</span>
-        <button class="wl-delete-btn" onclick="deleteWorklogTask('${todayLogId}','${task._id}')" title="Xóa">✕</button>
-      </li>
-    `).join('');
-  }
-
-  function escapeHtml(text) {
-    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  }
-
-  // Add task
-  if (worklogAddBtn) {
-    worklogAddBtn.addEventListener('click', async () => {
-      const content = worklogInput?.value?.trim();
-      if (!content) return;
-      try {
-        worklogAddBtn.disabled = true;
-        const res = await fetch(`${API_URL}/worklog/add-task`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-          body: JSON.stringify({ content })
-        });
-        const data = await res.json();
-        if (res.ok) {
-          worklogInput.value = '';
-          todayLogId = data.data._id;
-          renderWorkLog(data.data.tasks);
-        } else {
-          alert(data.message);
-        }
-      } catch (err) {
-        alert('Lỗi kết nối');
-      } finally {
-        worklogAddBtn.disabled = false;
-      }
-    });
-  }
-
-  // Enter key to add task
-  if (worklogInput) {
-    worklogInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') { e.preventDefault(); worklogAddBtn?.click(); }
-    });
-  }
 
   function updateUI() {
     if (currentUser) {
       userFullname.textContent = currentUser.fullName;
       if (currentUser.role === 'admin') {
         btnAdminPanel.style.display = 'block';
+        if (btnWorklogPage) btnWorklogPage.style.display = 'none';
       } else {
         btnAdminPanel.style.display = 'none';
+        if (btnWorklogPage) btnWorklogPage.style.display = 'block';
       }
-      if (worklogSection) worklogSection.style.display = 'block';
     } else {
-      if (worklogSection) worklogSection.style.display = 'none';
+      if (btnWorklogPage) btnWorklogPage.style.display = 'none';
+      if (btnAdminPanel) btnAdminPanel.style.display = 'none';
     }
   }
 });
-
-// Global function for delete task (called from inline onclick)
-async function deleteWorklogTask(logId, taskId) {
-  if (!logId || !taskId) return;
-  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  const API_URL = isLocal ? 'http://localhost:5000/api' : 'https://vinh-long-marathon.onrender.com/api';
-  const token = localStorage.getItem('skilllink_token');
-
-  try {
-    const res = await fetch(`${API_URL}/worklog/task/${logId}/${taskId}`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    const data = await res.json();
-    if (res.ok) {
-      // Re-render tasks
-      const list = document.getElementById('worklog-list');
-      if (list) {
-        const tasks = data.data?.tasks || [];
-        if (tasks.length === 0) {
-          list.innerHTML = '<li class="wl-empty">Chưa có đầu việc nào hôm nay</li>';
-        } else {
-          list.innerHTML = tasks.map(task => `
-            <li class="wl-task" data-task-id="${task._id}">
-              <span class="wl-task-content">${task.content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>
-              <button class="wl-delete-btn" onclick="deleteWorklogTask('${logId}','${task._id}')" title="Xóa">✕</button>
-            </li>
-          `).join('');
-        }
-      }
-    } else {
-      alert(data.message);
-    }
-  } catch (err) {
-    alert('Lỗi kết nối');
-  }
-}
