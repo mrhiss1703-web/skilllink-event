@@ -1,225 +1,202 @@
-const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const API_URL = isLocal ? 'http://localhost:5000/api' : 'https://vinh-long-marathon.onrender.com/api';
+/**
+ * SkillLink Event Agency - Authentication & Internal Portal Logic
+ */
+
+import { showToast } from './toast.js';
+import { setupAttendance } from './attendance.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const userBtn = document.getElementById('user-btn');
   const userDropdown = document.getElementById('user-dropdown');
+  const btnShowLogin = document.getElementById('btn-show-login');
+
+  // Modal Elements
   const authModal = document.getElementById('auth-modal');
   const authClose = document.getElementById('auth-close');
   const authForm = document.getElementById('auth-form');
   const authError = document.getElementById('auth-error');
+  const usernameInput = document.getElementById('auth-username');
+  const passwordInput = document.getElementById('auth-password');
+  const togglePwdBtn = document.getElementById('toggle-login-pwd');
+  const authSubmit = document.getElementById('auth-submit');
 
+  // Dropdown UI Elements
   const userFullname = document.getElementById('user-fullname');
-  const btnCheckin = document.getElementById('btn-checkin');
-  const btnCheckout = document.getElementById('btn-checkout');
+  const userMeta = document.getElementById('user-meta');
   const btnAdminPanel = document.getElementById('btn-admin-panel');
   const btnWorklogPage = document.getElementById('btn-worklog-page');
+  const btnCheckin = document.getElementById('btn-checkin');
+  const btnCheckout = document.getElementById('btn-checkout');
   const btnLogout = document.getElementById('btn-logout');
 
-  let currentUser = JSON.parse(localStorage.getItem('skilllink_user') || 'null');
-  let token = localStorage.getItem('skilllink_token');
+  // Cấu hình URL gọi API đồng bộ theo domain cổng portal
+  const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+  const portalUrl = window.SKILLLINK_PORTAL_URL || (isLocal ? `http://${window.location.hostname}:5173` : 'https://skilllink-admin-fawn.vercel.app');
+  const API_URL = window.SKILLLINK_API_URL || `${portalUrl}/api`;
 
-  // Initial UI state
-  updateUI();
-
-  // Toggle password visibility on login form
-  const toggleLoginPwd = document.getElementById('toggle-login-pwd');
-  const authPassword = document.getElementById('auth-password');
-  if (toggleLoginPwd && authPassword) {
-    toggleLoginPwd.addEventListener('click', () => {
-      const isHidden = authPassword.type === 'password';
-      authPassword.type = isHidden ? 'text' : 'password';
-      toggleLoginPwd.innerHTML = isHidden
-        ? `<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 4.411m0 0L21 21"/></svg>`
-        : `<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>`;
-    });
-  }
-
-  // Toggle Dropdown or Open Modal
-  userBtn.addEventListener('click', () => {
-    if (token) {
-      userDropdown.classList.toggle('show');
-      if (userDropdown.classList.contains('show')) {
-        fetchMyAttendanceToday();
-      }
-    } else {
-      authModal.classList.add('open');
-    }
+  // Toggle Dropdown
+  userBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isExpanded = userBtn.getAttribute('aria-expanded') === 'true';
+    userBtn.setAttribute('aria-expanded', !isExpanded);
+    userDropdown?.classList.toggle('show');
   });
 
-  // Close Dropdown when clicking outside
   document.addEventListener('click', (e) => {
-    if (!userBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+    if (userDropdown && !userDropdown.contains(e.target) && e.target !== userBtn) {
+      userBtn?.setAttribute('aria-expanded', 'false');
       userDropdown.classList.remove('show');
     }
   });
 
-  // Close Modal
-  authClose.addEventListener('click', () => {
-    authModal.classList.remove('open');
-    authError.style.display = 'none';
+  // Helper API Call (Có gửi thông tin xác thực)
+  async function apiCall(endpoint, method = 'GET', body = null) {
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-SkillLink-Client': 'react'
+    };
+
+    const config = {
+      method,
+      headers,
+      credentials: 'include'
+    };
+
+    if (body) {
+      config.body = JSON.stringify(body);
+    }
+
+    const response = await fetch(`${API_URL}${endpoint}`, config);
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Lỗi kết nối máy chủ');
+    }
+    return data;
+  }
+
+  // Cập nhật giao diện dựa trên dữ liệu localStorage (offline cache)
+  function updateUI() {
+    const userStr = localStorage.getItem('skilllink_user');
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        if (userFullname) userFullname.textContent = user.fullName || user.username;
+        if (userMeta) userMeta.textContent = user.role === 'admin' ? 'Quản trị viên' : 'Nhân sự';
+
+        if (btnShowLogin) btnShowLogin.style.display = 'none';
+        if (btnAdminPanel) btnAdminPanel.style.display = 'block';
+        if (btnWorklogPage) btnWorklogPage.style.display = 'block';
+        if (btnCheckin) btnCheckin.style.display = 'block';
+        if (btnCheckout) btnCheckout.style.display = 'block';
+        if (btnLogout) btnLogout.style.display = 'block';
+      } catch (e) {
+        logout();
+      }
+    } else {
+      if (userFullname) userFullname.textContent = 'Khách';
+      if (userMeta) userMeta.textContent = 'Chưa đăng nhập';
+
+      if (btnShowLogin) btnShowLogin.style.display = 'block';
+      if (btnAdminPanel) btnAdminPanel.style.display = 'none';
+      if (btnWorklogPage) btnWorklogPage.style.display = 'none';
+      if (btnCheckin) btnCheckin.style.display = 'none';
+      if (btnCheckout) btnCheckout.style.display = 'none';
+      if (btnLogout) btnLogout.style.display = 'none';
+    }
+  }
+
+  // Kiểm tra phiên đăng nhập hiện tại từ server
+  async function checkSession() {
+    try {
+      const data = await apiCall('/auth/me');
+      localStorage.setItem('skilllink_user', JSON.stringify(data.data || data));
+      updateUI();
+    } catch (e) {
+      localStorage.removeItem('skilllink_user');
+      updateUI();
+    }
+  }
+
+  function openLoginModal() {
+    userDropdown?.classList.remove('show');
+    authModal?.classList.add('open');
+    authModal?.setAttribute('aria-hidden', 'false');
+    usernameInput?.focus();
+  }
+
+  function closeLoginModal() {
+    authModal?.classList.remove('open');
+    authModal?.setAttribute('aria-hidden', 'true');
+    if (authError) authError.style.display = 'none';
+  }
+
+  // Login Modal Events
+  btnShowLogin?.addEventListener('click', openLoginModal);
+  authClose?.addEventListener('click', closeLoginModal);
+  authModal?.addEventListener('click', (e) => {
+    if (e.target === authModal) closeLoginModal();
   });
 
-  // Login Submit
-  authForm.addEventListener('submit', async (e) => {
+  togglePwdBtn?.addEventListener('click', () => {
+    if (!passwordInput) return;
+    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordInput.setAttribute('type', type);
+    togglePwdBtn.textContent = type === 'password' ? '👁' : '👁‍🗨';
+  });
+
+  authForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const username = document.getElementById('auth-username').value;
-    const password = document.getElementById('auth-password').value;
+    if (authError) authError.style.display = 'none';
+    if (authSubmit) {
+      authSubmit.disabled = true;
+      authSubmit.textContent = 'Đang đăng nhập...';
+    }
 
     try {
-      const res = await fetch(`${API_URL}/employees/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+      const data = await apiCall('/auth/login', 'POST', {
+        username: usernameInput.value,
+        password: passwordInput.value
       });
-      const data = await res.json();
 
-      if (res.ok) {
-        token = data.data.token;
-        currentUser = data.data.user;
-        localStorage.setItem('skilllink_token', token);
-        localStorage.setItem('skilllink_user', JSON.stringify(currentUser));
-        authModal.classList.remove('open');
-        authForm.reset();
-        authError.style.display = 'none';
-        updateUI();
-      } else {
-        authError.textContent = data.message || 'Đăng nhập thất bại';
+      const user = data.data?.user || {};
+      localStorage.setItem('skilllink_user', JSON.stringify(user));
+
+      closeLoginModal();
+      authForm.reset();
+      updateUI();
+
+      showToast(`Đăng nhập thành công! Chào mừng ${user.fullName || user.username}.`, 'success', 'Đăng nhập thành công');
+    } catch (err) {
+      if (authError) {
+        authError.textContent = err.message;
         authError.style.display = 'block';
       }
-    } catch (err) {
-      authError.textContent = 'Không thể kết nối đến máy chủ';
-      authError.style.display = 'block';
+    } finally {
+      if (authSubmit) {
+        authSubmit.disabled = false;
+        authSubmit.textContent = 'Đăng nhập';
+      }
     }
   });
 
   // Logout
-  btnLogout.addEventListener('click', () => {
-    localStorage.removeItem('skilllink_token');
+  async function logout() {
+    try {
+      await apiCall('/auth/logout', 'POST');
+    } catch(e) {}
     localStorage.removeItem('skilllink_user');
-    token = null;
-    currentUser = null;
-    userDropdown.classList.remove('show');
     updateUI();
-  });
-
-  // --- Attendance (Free Check-in / Check-out) ---
-  async function fetchMyAttendanceToday() {
-    if (!token) return;
-    try {
-      const res = await fetch(`${API_URL}/attendance/me/today`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (!res.ok) return;
-      const data = await res.json();
-      const record = data.data;
-
-      btnCheckin.style.display = 'block';
-      btnCheckout.style.display = 'block';
-
-      if (!record) {
-        btnCheckin.textContent = 'Điểm danh vào';
-        btnCheckin.disabled = false;
-        btnCheckin.classList.remove('opacity-50', 'cursor-not-allowed');
-        btnCheckout.textContent = 'Điểm danh ra';
-        btnCheckout.disabled = true;
-        btnCheckout.classList.add('opacity-50', 'cursor-not-allowed');
-      } else if (record.checkInTime && !record.checkOutTime) {
-        const ciTime = new Date(record.checkInTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-        btnCheckin.textContent = `✓ Đã vào lúc ${ciTime}`;
-        btnCheckin.disabled = true;
-        btnCheckin.classList.add('opacity-50', 'cursor-not-allowed');
-        btnCheckout.textContent = 'Điểm danh ra';
-        btnCheckout.disabled = false;
-        btnCheckout.classList.remove('opacity-50', 'cursor-not-allowed');
-      } else if (record.checkInTime && record.checkOutTime) {
-        const ciTime = new Date(record.checkInTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-        const coTime = new Date(record.checkOutTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-        btnCheckin.textContent = `✓ Vào ${ciTime}`;
-        btnCheckin.disabled = true;
-        btnCheckin.classList.add('opacity-50', 'cursor-not-allowed');
-        btnCheckout.textContent = `✓ Ra ${coTime}`;
-        btnCheckout.disabled = true;
-        btnCheckout.classList.add('opacity-50', 'cursor-not-allowed');
-      }
-    } catch (err) {
-      console.error(err);
-    }
+    userDropdown?.classList.remove('show');
+    showToast('Bạn đã đăng xuất khỏi hệ thống.', 'info', 'Đã đăng xuất');
   }
 
-  function getLocation() {
-    return new Promise((resolve, reject) => {
-      if (!navigator.geolocation) {
-        reject(new Error('Trình duyệt của bạn không hỗ trợ định vị (GPS).'));
-      } else {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-          () => reject(new Error('Không thể lấy được vị trí. Vui lòng cho phép truy cập vị trí.'))
-        );
-      }
-    });
-  }
+  btnLogout?.addEventListener('click', logout);
 
-  // Check In
-  btnCheckin.addEventListener('click', async () => {
-    let location = {};
-    try {
-      btnCheckin.disabled = true;
-      btnCheckin.textContent = 'Đang lấy vị trí...';
-      location = await getLocation();
-    } catch (err) {
-      location = {};
-    }
+  // Setup Checkin/Checkout Modals
+  setupAttendance({ apiCall, openLoginModal });
 
-    try {
-      const res = await fetch(`${API_URL}/attendance/free-checkin`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ lat: location.lat, lng: location.lng })
-      });
-      const data = await res.json();
-      alert(data.message);
-      await fetchMyAttendanceToday();
-    } catch (err) {
-      alert('Lỗi kết nối');
-    } finally {
-      btnCheckin.disabled = false;
-    }
-  });
-
-  // Check Out
-  btnCheckout.addEventListener('click', async () => {
-    try {
-      btnCheckout.disabled = true;
-      btnCheckout.textContent = 'Đang xử lý...';
-      const res = await fetch(`${API_URL}/attendance/free-checkout`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({})
-      });
-      const data = await res.json();
-      alert(data.message);
-      await fetchMyAttendanceToday();
-    } catch (err) {
-      alert('Lỗi kết nối');
-    } finally {
-      btnCheckout.disabled = false;
-    }
-  });
-
-  function updateUI() {
-    if (currentUser) {
-      userFullname.textContent = currentUser.fullName;
-      if (currentUser.role === 'admin') {
-        btnAdminPanel.style.display = 'block';
-        if (btnWorklogPage) btnWorklogPage.style.display = 'none';
-      } else {
-        btnAdminPanel.style.display = 'none';
-        if (btnWorklogPage) btnWorklogPage.style.display = 'block';
-      }
-    } else {
-      if (btnWorklogPage) btnWorklogPage.style.display = 'none';
-      if (btnAdminPanel) btnAdminPanel.style.display = 'none';
-    }
-  }
+  // Khởi tạo trạng thái
+  updateUI();
+  checkSession();
 });

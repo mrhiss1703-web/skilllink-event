@@ -2,227 +2,68 @@
 <html lang="vi">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Nhật ký thực tập và lịch làm việc — SkillLink Event Agency Cần Thơ.">
-  <title>Nhật Ký Thực Tập & Lịch Làm Việc | SkillLink Event Agency</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Nhật Ký Đầu Việc | SkillLink</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/worklog.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #07182b;
+      color: #f7f8f6;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      text-align: center;
+      padding: 24px;
+    }
+    .logo {
+      width: 140px;
+      height: auto;
+      margin-bottom: 24px;
+      opacity: 0.95;
+    }
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid rgba(63, 185, 130, 0.2);
+      border-top-color: #3fb982;
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+      margin-bottom: 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .text {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+    .fallback {
+      margin-top: 24px;
+      font-size: 0.78rem;
+      color: #64748b;
+    }
+    .fallback a {
+      color: #3fb982;
+      text-decoration: none;
+    }
+    .fallback a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
-<body>
-  <!-- Top Sticky Navigation -->
-  <header class="top-nav">
-    <div class="container nav-inner">
-      <div class="nav-brand-group">
-        <a href="index.html" title="Về trang chủ SkillLink">
-          <img src="LOGO ÁO trắng NỀN đen.png" alt="SkillLink Event Agency" class="brand-logo">
-        </a>
-        <div class="nav-divider"></div>
-        <div class="nav-title-box">
-          <h1>Nhật Ký Thực Tập</h1>
-          <p>SkillLink Event Agency Cần Thơ</p>
-        </div>
-      </div>
-      <div class="nav-user-actions">
-        <a href="index.html" class="nav-btn btn-nav-home" title="Trang chủ sự kiện"><span>← Về trang chủ</span></a>
-        <div class="user-pill" id="user-pill" style="display:none;">
-          <div class="user-avatar" id="nav-user-avatar">SL</div>
-          <div class="user-details">
-            <span class="user-name" id="nav-user-name">Đang tải...</span>
-            <span class="user-role" id="nav-user-role">Thực tập sinh</span>
-          </div>
-        </div>
-        <button type="button" class="nav-btn btn-nav-logout" id="btn-logout" title="Đăng xuất tài khoản"><span>Đăng xuất</span></button>
-      </div>
-    </div>
-  </header>
+<body data-portal-route="/my-worklog">
+  <img src="LOGO ÁO trắng NỀN đen.png" alt="SkillLink Logo" class="logo">
+  <div class="spinner"></div>
+  <p class="text">Đang chuyển tiếp sang Nhật Ký Đầu Việc...</p>
+  <p class="fallback">Nếu trang không tự chuyển, <a id="portal-link" href="#">bấm vào đây</a>.</p>
 
-  <!-- Print Specific Header (Visible only when printing) -->
-  <div class="container print-header">
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <div>
-        <h2 style="font-size:1.4rem;font-weight:800;text-transform:uppercase;">Báo Cáo Nhật Ký Thực Tập</h2>
-        <p style="font-size:0.95rem;color:#444;">Công ty TNHH SkillLink Event Agency Cần Thơ</p>
-        <p style="font-size:0.85rem;color:#666;">12 Đường Số 34, An Bình, Ninh Kiều, Cần Thơ · Hotline: 070 474 7834</p>
-      </div>
-      <div style="text-align:right;">
-        <p style="font-size:0.9rem;">Họ tên: <strong id="print-user-name">...</strong></p>
-        <p style="font-size:0.85rem;">Thời gian xuất: <span id="print-export-time">...</span></p>
-      </div>
-    </div>
-  </div>
-
-  <main class="container">
-    <!-- Status & Quick Action Metrics Bar -->
-    <section class="status-section">
-      <div class="metrics-grid">
-        <div class="metric-card accent-emerald">
-          <div class="metric-head"><span>Điểm danh hôm nay</span><span class="metric-icon" id="att-status-indicator">🟢</span></div>
-          <div class="metric-value" id="att-time-display">--:--</div>
-          <div class="metric-sub" id="att-sub-display">Chưa điểm danh vào</div>
-          <div class="att-action-row">
-            <button type="button" class="btn btn-att btn-att-in" id="btn-checkin"><span>✓ Check-in</span></button>
-            <button type="button" class="btn btn-att btn-att-out" id="btn-checkout" disabled><span>Check-out</span></button>
-          </div>
-        </div>
-        <div class="metric-card accent-gold">
-          <div class="metric-head"><span>Tổng đầu việc đã ghi</span><span class="metric-icon">📋</span></div>
-          <div class="metric-value" id="metric-total-tasks">0</div>
-          <div class="metric-sub" id="metric-month-label">Trong tháng này</div>
-        </div>
-        <div class="metric-card accent-blue">
-          <div class="metric-head"><span>Số ngày hoạt động</span><span class="metric-icon">📅</span></div>
-          <div class="metric-value" id="metric-active-days">0</div>
-          <div class="metric-sub">Ngày có ghi nhận công việc</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-head"><span>Ngày đang chọn</span><span class="metric-icon">🎯</span></div>
-          <div class="metric-value" style="font-size:1.15rem;" id="metric-selected-date-str">Hôm nay</div>
-          <div class="metric-sub" id="metric-selected-date-sub">Bấm lịch để đổi ngày</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Main Workspace -->
-    <div class="workspace">
-      <!-- Left Column: Interactive Calendar & Presets -->
-      <aside class="sidepanel">
-        <div class="panel-card">
-          <div class="cal-header">
-            <button type="button" class="cal-nav-btn" id="cal-prev-btn" aria-label="Tháng trước">‹</button>
-            <div class="cal-month-title" id="cal-month-title">Tháng 9 / 2026</div>
-            <button type="button" class="cal-nav-btn" id="cal-next-btn" aria-label="Tháng sau">›</button>
-          </div>
-          <div class="cal-weekdays"><span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span>CN</span></div>
-          <div class="cal-grid" id="cal-grid"></div>
-          <div class="cal-legend">
-            <div class="legend-item"><span class="legend-dot" style="background:var(--emerald);"></span><span>Đầu việc</span></div>
-            <div class="legend-item"><span class="legend-dot" style="background:var(--gold);"></span><span>Điểm danh</span></div>
-            <div class="legend-item"><span class="legend-dot" style="border:1px solid var(--gold);"></span><span>Hôm nay</span></div>
-          </div>
-        </div>
-
-        <div class="panel-card">
-          <div class="panel-card-title"><span>Bộ lọc xem nhanh</span></div>
-          <div class="filter-presets">
-            <button type="button" class="btn btn-preset active" data-filter="month"><span>📅 Toàn bộ tháng này</span></button>
-            <button type="button" class="btn btn-preset" data-filter="today"><span>📍 Chỉ hôm nay</span></button>
-            <button type="button" class="btn btn-preset" data-filter="has_tasks"><span>📝 Chỉ ngày có đầu việc</span></button>
-            <button type="button" class="btn btn-preset" data-filter="all"><span>📂 Tất cả lịch sử</span></button>
-          </div>
-        </div>
-      </aside>
-
-      <!-- Right Column: Work Entry & Timeline History -->
-      <div class="main-panel">
-        <!-- Task Entry Card -->
-        <section class="entry-card" aria-label="Khu vực nhập nhật ký thực tập">
-          <div class="entry-head">
-            <div class="entry-date-badge"><span>✏️ Nhập việc ngày:</span><strong id="entry-active-date-text">--/--/----</strong></div>
-            <div class="entry-date-picker-wrap">
-              <label for="entry-custom-date" style="font-size:0.75rem;color:var(--muted);">Đổi ngày:</label>
-              <input type="date" id="entry-custom-date" class="entry-date-input">
-            </div>
-          </div>
-          <!-- Attendance Required Lock Notice -->
-          <div id="entry-att-required-notice" class="entry-lock-notice" style="display:none;">
-            <div class="lock-notice-left">
-              <span class="lock-notice-icon">🔒</span>
-              <div class="lock-notice-content">
-                <h4>Bắt buộc điểm danh vào đầu ngày</h4>
-                <p>Bạn cần điểm danh vào đầu ngày trước khi ghi nhận nhật ký công việc của hôm nay.</p>
-              </div>
-            </div>
-            <button type="button" class="btn btn-lock-checkin" id="btn-lock-checkin">
-              <span>Điểm danh vào ngay 📍</span>
-            </button>
-          </div>
-          <div class="chips-row">
-            <button type="button" class="chip" data-prefix="[Hậu cần sự kiện] ">+ Hậu cần sự kiện</button>
-            <button type="button" class="chip" data-prefix="[Thiết kế / Media] ">+ Thiết kế / Media</button>
-            <button type="button" class="chip" data-prefix="[Khảo sát địa điểm] ">+ Khảo sát địa điểm</button>
-            <button type="button" class="chip" data-prefix="[Chạy chương trình] ">+ Chạy chương trình</button>
-            <button type="button" class="chip" data-prefix="[Kho thiết bị] ">+ Kho thiết bị</button>
-            <button type="button" class="chip" data-prefix="[Họp & Báo cáo] ">+ Họp & Báo cáo</button>
-          </div>
-          <div class="task-input-box">
-            <textarea id="task-input" class="task-textarea" rows="2" placeholder="Ghi lại việc bạn đã làm (VD: Hỗ trợ setup âm thanh sân khấu sự kiện Hype Fest, kiểm đếm 40 bộ đàm...)"></textarea>
-            <button type="button" class="btn btn-submit-task" id="btn-add-task"><span>Lưu việc</span><span>➕</span></button>
-          </div>
-        </section>
-
-        <!-- Timeline / History View -->
-        <section aria-label="Lịch sử nhật ký công việc">
-          <div class="timeline-bar">
-            <div class="timeline-title"><span>Lịch sử công việc</span><span id="timeline-count-badge">0 ngày</span></div>
-            <div class="timeline-actions">
-              <div class="search-input-wrap">
-                <span class="search-icon">🔍</span>
-                <input type="text" id="search-input" class="search-input" placeholder="Tìm kiếm công việc...">
-              </div>
-              <button type="button" class="btn btn-print" id="btn-export-print" title="In hoặc xuất báo cáo A4"><span>🖨️ Xuất báo cáo</span></button>
-            </div>
-          </div>
-          <div class="timeline-list" id="timeline-list"></div>
-        </section>
-      </div>
-    </div>
-  </main>
-
-  <!-- Print Specific Footer (Visible only when printing) -->
-  <div class="container print-footer">
-    <div>
-      <p style="font-weight:700;">SINH VIÊN THỰC TẬP</p>
-      <p style="font-size:0.85rem;color:#666;font-style:italic;">(Ký và ghi rõ họ tên)</p>
-      <div style="height:80px;"></div>
-      <p id="print-intern-signature">...</p>
-    </div>
-    <div>
-      <p style="font-weight:700;">ĐẠI DIỆN SKILLLINK EVENT AGENCY</p>
-      <p style="font-size:0.85rem;color:#666;font-style:italic;">(Ký, đóng dấu xác nhận)</p>
-      <div style="height:80px;"></div>
-      <p>Ban Giám Đốc</p>
-    </div>
-  </div>
-
-  <!-- Modal: Edit Task Content -->
-  <div class="modal-backdrop" id="edit-modal">
-    <div class="modal-box">
-      <h3 class="modal-title">Chỉnh sửa đầu việc</h3>
-      <div class="form-group">
-        <label for="edit-task-input">Nội dung công việc</label>
-        <textarea id="edit-task-input" class="task-textarea" rows="3" style="width:100%;"></textarea>
-      </div>
-      <div class="modal-actions">
-        <button type="button" class="btn btn-preset" id="btn-cancel-edit">Hủy</button>
-        <button type="button" class="btn btn-submit-task" id="btn-save-edit">Cập nhật</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal / Overlay: Login required -->
-  <div class="auth-overlay" id="auth-overlay">
-    <div class="auth-card">
-      <img src="LOGO ÁO trắng NỀN đen.png" alt="SkillLink" class="auth-logo">
-      <h2>Đăng nhập nội bộ</h2>
-      <p>Vui lòng đăng nhập tài khoản thực tập sinh / nhân viên để sử dụng nhật ký.</p>
-      <div class="auth-error-msg" id="login-error-msg"></div>
-      <form id="login-form">
-        <div class="form-group">
-          <label>Tên đăng nhập</label>
-          <input type="text" id="login-username" class="form-input" required autocomplete="username">
-        </div>
-        <div class="form-group">
-          <label>Mật khẩu</label>
-          <input type="password" id="login-password" class="form-input" required autocomplete="current-password">
-        </div>
-        <button type="submit" class="btn btn-submit-task" style="width:100%;margin-top:12px;">Đăng nhập ngay</button>
-        <a href="index.html" style="display:inline-block;margin-top:16px;font-size:0.8rem;color:var(--muted);">← Quay lại trang chủ SkillLink</a>
-      </form>
-    </div>
-  </div>
-
-  <script type="module" src="assets/js/worklog.js"></script>
+  <script src="assets/js/portal-config.js"></script>
+  <script type="module" src="assets/js/portal-redirect.js"></script>
 </body>
 </html>
