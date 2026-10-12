@@ -5,7 +5,7 @@
 
 import { showToast } from './toast.js';
 
-export function setupAttendance({ apiCall, openLoginModal }) {
+export function setupAttendance({ apiCall, openLoginModal, openChangePasswordModal }) {
   const $ = (id) => document.getElementById(id);
 
   // Check-in elements
@@ -84,6 +84,11 @@ export function setupAttendance({ apiCall, openLoginModal }) {
       openLoginModal?.();
       return;
     }
+    if (user.mustChangePassword) {
+      showToast('Vui lòng đổi mật khẩu trước khi điểm danh.', 'warning', 'Đổi mật khẩu');
+      openChangePasswordModal?.();
+      return;
+    }
     const roleName = user.role === 'admin' ? 'Quản trị viên' :
       (user.attendanceGroup === 'INTERN_SHIFT' || user.role === 'INTERN' || user.employeeType === 'INTERN' ? 'Thực tập sinh' : 'Nhân sự');
     const badge = $('checkin-user-badge');
@@ -129,6 +134,10 @@ export function setupAttendance({ apiCall, openLoginModal }) {
       } catch (err) {
         setStatus(checkinStatus, checkinStatusText, '', false);
         setError(checkinError, checkinErrorText, err.message || 'Lỗi khi điểm danh');
+        if (err.message && err.message.includes('đổi mật khẩu')) {
+          toggleModal(checkinModal, false);
+          openChangePasswordModal?.();
+        }
         btnCheckinSubmit.disabled = false;
         btnCheckinSubmit.innerHTML = '<span>Thử lại</span>';
       }
@@ -161,6 +170,11 @@ export function setupAttendance({ apiCall, openLoginModal }) {
     if (!user) {
       showToast('Vui lòng đăng nhập tài khoản trước khi điểm danh.', 'warning');
       openLoginModal?.();
+      return;
+    }
+    if (user.mustChangePassword) {
+      showToast('Vui lòng đổi mật khẩu trước khi điểm danh.', 'warning', 'Đổi mật khẩu');
+      openChangePasswordModal?.();
       return;
     }
     const badge = $('checkout-user-badge');

@@ -5,7 +5,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   try {
     const target = new URL(window.SKILLLINK_PORTAL_URL || window.location.origin);
-    target.pathname = document.body.dataset.portalRoute || '/';
+    const routeParam = new URLSearchParams(window.location.search).get('route');
+    target.pathname = routeParam || document.body.dataset.portalRoute || '/';
     target.search = '';
     target.hash = '';
 
