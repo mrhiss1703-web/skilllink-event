@@ -137,6 +137,10 @@ export function setupAttendance({ apiCall, openLoginModal, openChangePasswordMod
         if (err.message && err.message.includes('đổi mật khẩu')) {
           toggleModal(checkinModal, false);
           openChangePasswordModal?.();
+        } else if (err.message && (err.message.includes('đăng nhập') || err.message.includes('Phiên'))) {
+          toggleModal(checkinModal, false);
+          showToast('Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại.', 'warning', 'Đăng nhập');
+          openLoginModal?.();
         }
         btnCheckinSubmit.disabled = false;
         btnCheckinSubmit.innerHTML = '<span>Thử lại</span>';
@@ -203,6 +207,11 @@ export function setupAttendance({ apiCall, openLoginModal, openChangePasswordMod
       } catch (err) {
         setStatus(checkoutStatus, checkoutStatusText, '', false);
         setError(checkoutError, checkoutErrorText, err.message || 'Lỗi khi điểm danh ra');
+        if (err.message && (err.message.includes('đăng nhập') || err.message.includes('Phiên'))) {
+          toggleModal(checkoutModal, false);
+          showToast('Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại.', 'warning', 'Đăng nhập');
+          openLoginModal?.();
+        }
         btnCheckoutSubmit.disabled = false;
         btnCheckoutSubmit.innerHTML = '<span>Thử lại</span>';
       }

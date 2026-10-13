@@ -70,6 +70,11 @@ document.addEventListener('DOMContentLoaded', () => {
       'X-SkillLink-Client': 'react'
     };
 
+    const token = localStorage.getItem('skilllink_token');
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const config = {
       method,
       headers,
@@ -214,6 +219,10 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       const user = data.data?.user || {};
+      const token = data.data?.token || '';
+      if (token) {
+        localStorage.setItem('skilllink_token', token);
+      }
       const savedPassword = passwordInput.value;
       localStorage.setItem('skilllink_user', JSON.stringify(user));
 
@@ -236,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } finally {
       if (authSubmit) {
         authSubmit.disabled = false;
-        authSubmit.textContent = 'Đang đăng nhập';
+        authSubmit.textContent = 'Đăng nhập';
       }
     }
   });
@@ -293,6 +302,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (username) {
         const loginData = await apiCall('/auth/login', 'POST', { username, password: newPassword });
         const updatedUser = loginData.data?.user || {};
+        const updatedToken = loginData.data?.token || '';
+        if (updatedToken) {
+          localStorage.setItem('skilllink_token', updatedToken);
+        }
         localStorage.setItem('skilllink_user', JSON.stringify(updatedUser));
       }
 
@@ -326,6 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
       await apiCall('/auth/logout', 'POST');
     } catch(e) {}
     localStorage.removeItem('skilllink_user');
+    localStorage.removeItem('skilllink_token');
     updateUI();
     userDropdown?.classList.remove('show');
     showToast('Bạn đã đăng xuất khỏi hệ thống.', 'info', 'Đã đăng xuất');
