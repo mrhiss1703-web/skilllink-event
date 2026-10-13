@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } finally {
       if (authSubmit) {
         authSubmit.disabled = false;
-        authSubmit.textContent = 'Đang đăng nhập';
+        authSubmit.textContent = 'Đăng nhập';
       }
     }
   });
