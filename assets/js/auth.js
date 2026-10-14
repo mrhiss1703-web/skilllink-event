@@ -63,8 +63,51 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Helper API Call (Có gửi thông tin xác thực)
-  async function apiCall(endpoint, method = 'GET', body = null) {
+  // Helper API Call (Có gửi thông tin xác thực & tự động refresh token)
+  let refreshPromise = null;
+
+  async function performRefreshToken() {
+    if (!refreshPromise) {
+      refreshPromise = (async () => {
+        const storedRefreshToken = localStorage.getItem('skilllink_refresh_token');
+        const refreshHeaders = {
+          'Content-Type': 'application/json',
+          'X-SkillLink-Client': 'react'
+        };
+        const refreshConfig = {
+          method: 'POST',
+          headers: refreshHeaders,
+          credentials: 'include'
+        };
+        if (storedRefreshToken) {
+          refreshConfig.body = JSON.stringify({ refreshToken: storedRefreshToken });
+        }
+        const res = await fetch(`${API_URL}/auth/refresh-token`, refreshConfig);
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(data.message || 'Phiên làm việc đã hết hạn');
+        }
+        const newToken = data.data?.token || data.token;
+        if (newToken) {
+          localStorage.setItem('skilllink_token', newToken);
+        }
+        const newRefreshToken = data.data?.refreshToken || data.refreshToken;
+        if (newRefreshToken) {
+          localStorage.setItem('skilllink_refresh_token', newRefreshToken);
+        }
+        const newUser = data.data?.user || data.user;
+        if (newUser) {
+          localStorage.setItem('skilllink_user', JSON.stringify(newUser));
+        }
+        return newToken;
+      })().finally(() => {
+        refreshPromise = null;
+      });
+    }
+    return refreshPromise;
+  }
+
+  async function apiCall(endpoint, method = 'GET', body = null, isRetry = false) {
     const headers = {
       'Content-Type': 'application/json',
       'X-SkillLink-Client': 'react'
@@ -86,7 +129,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const response = await fetch(`${API_URL}${endpoint}`, config);
-    const data = await response.json();
+    const data = await response.json().catch(() => ({}));
+
+    // Tự động làm mới phiên nếu token hết hạn (401)
+    if (response.status === 401 && !isRetry && !/\/auth\/(login|refresh-token|logout)/.test(endpoint)) {
+      try {
+        await performRefreshToken();
+        return await apiCall(endpoint, method, body, true);
+      } catch (refreshErr) {
+        localStorage.removeItem('skilllink_token');
+        localStorage.removeItem('skilllink_refresh_token');
+        localStorage.removeItem('skilllink_user');
+        updateUI();
+        throw new Error(refreshErr.message || 'Phiên đăng nhập đã hết hạn');
+      }
+    }
 
     if (!response.ok) {
       throw new Error(data.message || 'Lỗi kết nối máy chủ');
@@ -130,6 +187,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Kiểm tra phiên đăng nhập hiện tại từ server
   async function checkSession() {
     try {
+      const token = localStorage.getItem('skilllink_token');
+      const refreshToken = localStorage.getItem('skilllink_refresh_token');
+      // Nếu hoàn toàn chưa có token thì không cần kiểm tra server
+      if (!token && !refreshToken) {
+        localStorage.removeItem('skilllink_user');
+        updateUI();
+        return;
+      }
       const data = await apiCall('/auth/me');
       localStorage.setItem('skilllink_user', JSON.stringify(data.data || data));
       updateUI();
@@ -220,8 +285,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const user = data.data?.user || {};
       const token = data.data?.token || '';
+      const refreshToken = data.data?.refreshToken || '';
       if (token) {
         localStorage.setItem('skilllink_token', token);
+      }
+      if (refreshToken) {
+        localStorage.setItem('skilllink_refresh_token', refreshToken);
       }
       const savedPassword = passwordInput.value;
       localStorage.setItem('skilllink_user', JSON.stringify(user));
@@ -303,8 +372,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const loginData = await apiCall('/auth/login', 'POST', { username, password: newPassword });
         const updatedUser = loginData.data?.user || {};
         const updatedToken = loginData.data?.token || '';
+        const updatedRefreshToken = loginData.data?.refreshToken || '';
         if (updatedToken) {
           localStorage.setItem('skilllink_token', updatedToken);
+        }
+        if (updatedRefreshToken) {
+          localStorage.setItem('skilllink_refresh_token', updatedRefreshToken);
         }
         localStorage.setItem('skilllink_user', JSON.stringify(updatedUser));
       }
@@ -336,10 +409,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Logout
   async function logout() {
     try {
-      await apiCall('/auth/logout', 'POST');
+      const storedRefreshToken = localStorage.getItem('skilllink_refresh_token');
+      await apiCall('/auth/logout', 'POST', storedRefreshToken ? { refreshToken: storedRefreshToken } : null);
     } catch(e) {}
     localStorage.removeItem('skilllink_user');
     localStorage.removeItem('skilllink_token');
+    localStorage.removeItem('skilllink_refresh_token');
     updateUI();
     userDropdown?.classList.remove('show');
     showToast('Bạn đã đăng xuất khỏi hệ thống.', 'info', 'Đã đăng xuất');
