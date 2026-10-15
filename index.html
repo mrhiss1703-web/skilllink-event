@@ -578,12 +578,13 @@
     }
     .rental-actions {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
+      align-items: flex-start;
+      justify-content: flex-start;
       gap: 10px;
       margin-top: auto;
     }
     .rental-price {
+      text-align: left;
       color: #d5aa38;
       font: 800 clamp(1.05rem, 1.5vw, 1.6rem)/1.25 'Plus Jakarta Sans', sans-serif;
       white-space: nowrap;
@@ -645,6 +646,7 @@
     .projects .section-head h2 {
       max-width: 1150px;
       font-size: clamp(1.8rem, 3vw, 3.3rem);
+      line-height: 1.4;
       text-transform: uppercase;
     }
     .projects .eyebrow {
@@ -830,33 +832,14 @@
       font: 800 clamp(2rem, 2.8vw, 3.2rem) 'Plus Jakarta Sans', sans-serif;
       transition: all 0.25s ease;
     }
-    .step:hover .step-num {
-      background: var(--gold);
-      color: #000000;
-      border-color: var(--gold);
-      transform: scale(1.15);
-      box-shadow: 0 0 25px rgba(255, 184, 0, 0.45);
-    }
     .step h3 {
       margin: 0;
       font: 500 clamp(1rem, 1.5vw, 1.6rem)/1.3 'Plus Jakarta Sans', sans-serif;
       color: var(--white);
     }
     .step:first-child .step-num { background: #efc147; color: #000; }
-    .step:not(:last-child)::after {
-      content: '';
-      position: absolute;
-      top: clamp(35px, calc(3.25vw - 5px), 55px);
-      right: -17px;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #171304;
-    }
-    .step:first-child::after { background: #efc147; }
     @media (max-width: 1024px) {
       .process .timeline { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; }
-      .step:not(:last-child)::after { right: -13px; }
     }
     @media (max-width: 640px) {
       .process .container { width: calc(100% - 36px); }
@@ -864,7 +847,6 @@
       .process .timeline { grid-template-columns: 1fr; gap: 32px; }
       .step { display: flex; align-items: center; gap: 24px; text-align: left; }
       .step-num { flex-shrink: 0; margin: 0; }
-      .step:not(:last-child)::after { top: auto; bottom: -21px; left: 35px; right: auto; }
     }
 
     /* Partners Section */
@@ -1836,7 +1818,6 @@
         <div class="section-head reveal">
           <div>
             <p class="eyebrow">Khách hàng &amp; đối tác</p>
-            <h2>Đồng hành cùng những thương hiệu tin vào trải nghiệm.</h2>
           </div>
           <p>SkillLink tự hào đồng hành cùng các tập đoàn, doanh nghiệp, trường đại học và tổ chức uy tín.</p>
         </div>
