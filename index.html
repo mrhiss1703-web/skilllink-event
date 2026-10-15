@@ -429,17 +429,40 @@
 
     /* Rentals Section */
     .rentals {
-      background: var(--bg-surface-1);
+      background: radial-gradient(ellipse at bottom left, rgba(220, 171, 42, 0.19), transparent 60%), #000;
+    }
+    .rentals .container { width: min(1560px, calc(100% - 64px)); }
+    .rentals .section-head { display: block; margin-bottom: 54px; }
+    .rentals .section-head h2 {
+      max-width: none;
+      text-transform: uppercase;
+      font-size: clamp(1.8rem, 3.2vw, 3.3rem);
+    }
+    .rentals .eyebrow {
+      color: #fff;
+      font-weight: 400;
+      font-size: 1rem;
+      letter-spacing: 0;
+      margin-bottom: 28px;
+    }
+    .rentals .eyebrow::before, .rentals .eyebrow::after {
+      content: '';
+      width: 64px;
+      height: 1px;
+      background: #aaa;
     }
     .rental-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 20px;
+      gap: 30px;
+      max-width: 1280px;
+      margin: auto;
     }
     .rental-card {
-      background: var(--bg-card);
-      border: 1px solid var(--line);
-      border-radius: 14px;
+      position: relative;
+      background: #fff;
+      border: 0;
+      border-radius: 28px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -451,18 +474,19 @@
       box-shadow: 0 16px 40px rgba(255, 184, 0, 0.12);
     }
     .rental-card img {
-      height: 220px;
+      height: auto;
+      aspect-ratio: 1.65;
       width: 100%;
       object-fit: contain;
       padding: 14px;
       background: #ffffff;
     }
     .rental-info {
-      padding: 20px;
+      padding: 16px 22px 22px;
       display: flex;
       flex-direction: column;
       flex: 1;
-      background: #111111;
+      background: #fff;
     }
     .rental-info>div {
       display: flex;
@@ -470,9 +494,9 @@
       flex: 1;
     }
     .rental-info h3 {
-      margin: 0 0 6px;
-      font: 700 1.05rem 'Plus Jakarta Sans', sans-serif;
-      color: var(--white);
+      margin: 0 0 4px;
+      font: 800 clamp(1.1rem, 1.5vw, 1.6rem)/1.25 'Plus Jakarta Sans', sans-serif;
+      color: #080808;
     }
     .rental-info p {
       margin: 0 0 14px;
@@ -492,9 +516,40 @@
       margin-top: auto;
     }
     .rental-price {
-      color: var(--gold);
-      font: 800 0.95rem 'Plus Jakarta Sans', sans-serif;
+      color: #d5aa38;
+      font: 800 clamp(1.05rem, 1.5vw, 1.6rem)/1.25 'Plus Jakarta Sans', sans-serif;
       white-space: nowrap;
+    }
+    .rental-card[hidden] { display: none; }
+    .rental-card .detail-btn {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      border: 0;
+      border-radius: inherit;
+      padding: 0;
+      background: transparent;
+    }
+    .rental-card .detail-btn:hover { background: transparent; }
+    .rental-card .detail-btn:focus-visible { outline: 3px solid #b1841a; outline-offset: -4px; }
+    .rental-more {
+      display: block;
+      margin: 42px auto 0;
+      padding: 10px 26px;
+      border: 0;
+      border-radius: 999px;
+      background: #f5c84c;
+      color: #080808;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .rental-more:hover { background: #ffda71; }
+    .rental-more[hidden] { display: none; }
+    @media (max-width: 640px) {
+      .rentals .container { width: calc(100% - 36px); }
+      .rentals .section-head { margin-bottom: 32px; }
+      .rental-grid { gap: 20px; }
     }
     .detail-btn {
       padding: 8px 18px;
@@ -1519,12 +1574,12 @@
       <div class="container">
         <div class="section-head reveal">
           <div>
-            <p class="eyebrow">Cho thuê thiết bị sự kiện</p>
-            <h2>Thiết bị sẵn sàng. Thông tin minh bạch.</h2>
+            <p class="eyebrow">Thuê thiết bị</p>
+            <h2>Thiết bị sẵn sàng, thông tin minh bạch</h2>
           </div>
-          <p>Chọn “Xem chi tiết” để xem thông số kỹ thuật, chất liệu, kích thước và nhận báo giá ưu đãi theo số lượng thực tế.</p>
         </div>
         <div class="rental-grid reveal" id="rental-grid"></div>
+        <button class="rental-more" id="rental-more" type="button" aria-controls="rental-grid" aria-expanded="false">Xem thêm</button>
       </div>
     </section>
 
@@ -1955,23 +2010,34 @@
     ];
 
     const rentalGrid = document.querySelector('#rental-grid');
+    const rentalMore = document.querySelector('#rental-more');
+    const rentalOrder = [0, 6, 7, 3, 1, 4, 5, 8, 2, 9, 10, 11, 12];
     if (rentalGrid) {
-      rentalGrid.innerHTML = products.map((p, i) => `
-        <article class="rental-card">
+      rentalGrid.innerHTML = rentalOrder.map((i, position) => {
+        const p = products[i];
+        return `
+        <article class="rental-card" ${position >= 8 ? 'hidden' : ''}>
           <img loading="lazy" src="${p.image}" alt="${p.alt}">
           <div class="rental-info">
             <div>
               <h3>${p.name}</h3>
-              <p>${p.short}</p>
             </div>
             <div class="rental-actions">
-              <strong class="rental-price">${p.price}</strong>
-              <button class="detail-btn" type="button" data-product="${i}" aria-label="Xem chi tiết ${p.name}">Xem chi tiết</button>
+              <strong class="rental-price">${p.price.replace(/đ.*$/, ' VNĐ')}</strong>
+              <button class="detail-btn" type="button" data-product="${i}" aria-label="Xem chi tiết ${p.name}"></button>
             </div>
           </div>
         </article>
-      `).join('');
+      `; }).join('');
     }
+    rentalMore?.addEventListener('click', () => {
+      const expanded = rentalMore.getAttribute('aria-expanded') !== 'true';
+      rentalGrid.querySelectorAll('.rental-card').forEach((card, position) => {
+        card.hidden = !expanded && position >= 8;
+      });
+      rentalMore.setAttribute('aria-expanded', String(expanded));
+      rentalMore.textContent = expanded ? 'Thu gọn' : 'Xem thêm';
+    });
 
     const projectImageUpgrades = {
       'HYPE FEST 2025': 'Ảnh mới cần thay/Đại nhạc hội · 19.04.2025.jpg',
