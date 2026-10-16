@@ -111,11 +111,22 @@
     .brand {
       display: flex;
       align-items: center;
+      position: relative;
+      width: 126px;
+      height: 86px;
+      flex-shrink: 0;
+      overflow: hidden;
     }
     .brand img {
-      height: 52px;
+      position: absolute;
+      top: -40px;
+      left: -41px;
+      height: 167px;
       width: auto;
+      max-width: none;
       object-fit: contain;
+      transform: scale(0.88);
+      transform-origin: 50% 49.4%;
     }
     .nav-links {
       display: flex;
@@ -1001,7 +1012,7 @@
     .gold-bottom-bar {
       background: var(--gold);
       color: #000000;
-      padding: 20px 0;
+      padding: 0;
       font-weight: 700;
       font-size: 0.94rem;
     }
@@ -1016,10 +1027,23 @@
       font-weight: 700;
       letter-spacing: 0.02em;
     }
+    .gold-footer-container > a {
+      position: relative;
+      width: 158px;
+      height: 108px;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
     .gold-footer-logo {
-      height: 48px;
+      position: absolute;
+      top: -50px;
+      left: -52px;
+      height: 210px;
       width: auto;
+      max-width: none;
       object-fit: contain;
+      transform: scale(0.88);
+      transform-origin: 50% 49.4%;
       filter: brightness(0); /* Converts white logo to pure black */
     }
 
@@ -1584,6 +1608,7 @@
       .timeline { grid-template-columns: 1fr; gap: 14px; }
       .why-grid { grid-template-columns: 1fr; }
       .gold-footer-container { flex-direction: column-reverse; text-align: center; gap: 14px; }
+      .gold-bottom-bar { padding-bottom: 20px; }
       .btn-zalo-big { width: 100%; padding: 0 20px; }
     }
   </style>
@@ -1606,7 +1631,7 @@
         <a href="#contact">Liên hệ</a>
       </nav>
       <div class="nav-actions">
-        <a class="nav-cta" href="#contact">Nhận báo giá</a>
+        <a class="nav-cta" href="https://zalo.me/0704747834" target="_blank" rel="noopener noreferrer">Nhận báo giá</a>
         <div class="user-menu">
           <button class="user-btn" id="user-btn" type="button" aria-label="Tài khoản nội bộ" aria-haspopup="menu" aria-expanded="false">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
@@ -1848,7 +1873,7 @@
           <p>SkillLink tự hào đồng hành cùng các tập đoàn, doanh nghiệp, trường đại học và tổ chức uy tín.</p>
         </div>
         <div class="partner-board reveal">
-          <img src="assets/images/partner-logos.jpg" alt="Logo các khách hàng và đối tác tiêu biểu của SkillLink" loading="lazy">
+          <img src="Ảnh mới cần thay/đối tác new.jpg" alt="Logo các khách hàng và đối tác tiêu biểu của SkillLink" loading="lazy">
         </div>
       </div>
       <div class="container why-grid">
