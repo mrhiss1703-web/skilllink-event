@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>SkillLink Website | Thiết kế website &amp; hệ thống quản lý</title><meta name="description" content="SkillLink Website cung cấp dịch vụ thiết kế website, phát triển hệ thống quản lý và giải pháp số cho doanh nghiệp. Khám phá dịch vụ và dự án."><style>
+
+:root{color-scheme:dark;--bg:#080a0f;--text:#eef0f4;--muted:#b2b7c3;--border:#ffffff1f;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;scroll-behavior:smooth}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:linear-gradient(180deg,#07080d,#090a11);color:var(--text);line-height:1.65}
+a{color:inherit;text-underline-offset:4px}
+img{display:block;max-width:100%;height:auto}
+button{font:inherit;color:inherit;cursor:pointer}
+button,a,summary{-webkit-tap-highlight-color:transparent}
+a:focus-visible,button:focus-visible,summary:focus-visible,.gallery:focus-visible{outline:2px solid #d9e3ff;outline-offset:5px}
+h1,h2,h3{line-height:1.2;text-wrap:balance}
+p{color:var(--muted)}
+.container{width:min(1180px,calc(100% - 2rem));margin:auto}
+.topbar{position:sticky;top:0;z-index:20;background:#0a0c12f5;backdrop-filter:blur(18px);border-bottom:1px solid var(--border)}
+nav{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 0}
+.brand{font-weight:750;letter-spacing:.12em;text-decoration:none;white-space:nowrap}
+.nav-links{display:flex;gap:1.2rem}
+.nav-links a{color:var(--muted);text-decoration:none;padding:.5rem 0}
+.nav-links a:hover{color:#fff}
+.menu-toggle{display:none;background:#ffffff0a;border:1px solid var(--border);border-radius:.75rem;min-height:44px;padding:0 1rem}
+.section{padding:4rem 0;scroll-margin-top:6rem}
+.section-title{display:block;text-transform:uppercase;letter-spacing:.15em;font-size:.85rem;color:var(--muted);margin-bottom:1rem}
+.section h2{font-size:clamp(1.9rem,3vw,2.8rem);margin-bottom:1rem}
+.section>p{max-width:750px;margin-bottom:1.5rem}
+.hero{display:grid;grid-template-columns:1.35fr .8fr;align-items:center;gap:3rem;padding:4rem 0}
+.hero h1{font-size:clamp(2.25rem,3.8vw,3.8rem);margin:1.25rem 0}
+.hero p{margin-bottom:1.5rem}
+.eyebrow{display:inline-block;border:1px solid var(--border);background:#ffffff08;border-radius:99px;padding:.5rem .85rem;font-size:.85rem}
+.actions{display:flex;flex-wrap:wrap;gap:.75rem;margin:1.5rem 0}
+.button,.button-secondary,.gallery-controls button{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:.7rem 1.1rem;border:1px solid var(--border);border-radius:99px;background:#ffffff0a;text-decoration:none;font-weight:600;text-align:center}
+.button{background:#e4e7ed;color:#11141c}
+.button:hover{background:#fff}
+.button-secondary:hover,.gallery-controls button:hover{background:#ffffff18}
+.hero-points{display:flex;flex-wrap:wrap;gap:.6rem 1.2rem;list-style:none;color:var(--muted);font-size:.9rem}
+.hero-points li::before{content:'✓ ';color:var(--text)}
+.image-frame{padding:1rem;border:1px solid var(--border);border-radius:2rem;background:#ffffff06}
+.image-frame img{width:100%;aspect-ratio:1;object-fit:cover;object-position:center;border-radius:1.3rem}
+.image-frame figcaption{font-size:.9rem;margin-top:1rem;text-align:center;color:var(--muted)}
+.price-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+.card,.project-card,.panel,.contact-card{padding:1.5rem;border:1px solid var(--border);border-radius:1.4rem;background:#ffffff06;min-width:0}
+.card{display:flex;flex-direction:column;gap:1rem}
+.card h3{font-size:1.3rem}
+.card .button{margin-top:auto}
+.price{font-size:clamp(1.3rem,1.8vw,1.65rem);font-weight:750;color:var(--text)}
+.student-price{display:block;color:#e4eaff;font-size:1.5rem;font-weight:750}
+.featured{border-color:#ffffff50;background:#ffffff09}
+.features{padding-left:1.2rem;display:grid;gap:.5rem;color:var(--muted)}
+.scope{font-size:.9rem;border-top:1px solid var(--border);padding-top:1rem}
+.pricing-note{margin-top:1rem;padding:1.3rem;border:1px solid var(--border);border-radius:1rem;color:var(--muted)}
+details{border-top:1px solid var(--border);padding-top:.8rem}
+summary{cursor:pointer;min-height:44px;padding:.6rem 0;font-weight:600}
+details p{margin:.7rem 0}
+details .features{margin:.7rem 0}
+.project-list{display:grid;grid-template-columns:minmax(0,1fr);gap:1.3rem}
+.project-header{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1rem}
+.project-header h3{font-size:1.35rem}
+.project-header a{font-size:.85rem;flex-shrink:0}
+.project-card>p{margin-bottom:1rem}
+.project-card>a{display:block;margin-bottom:1rem}
+.project-card>a img{width:100%;aspect-ratio:16/10;object-fit:contain;background:#10131b;border-radius:.75rem}
+.gallery{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:1rem;scrollbar-width:thin;scrollbar-color:#717784 #151821}
+.gallery>a{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always}
+.gallery img{width:100%;aspect-ratio:16/10;object-fit:contain;background:#10131b;border-radius:.6rem}
+.gallery-controls{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin:1rem 0}
+.gallery-controls[hidden]{display:none}
+.gallery-controls button{font-size:.85rem;padding:.5rem .8rem}
+.gallery-controls button:disabled{opacity:.4;cursor:default}
+small{display:block;color:var(--muted);margin-top:.6rem}
+.internal{display:flex;flex-direction:column;justify-content:center}
+.internal .features{margin:1rem 0}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.process-list{list-style:none;counter-reset:step;display:grid;gap:.8rem}
+.process-list li{display:flex;align-items:center;gap:1rem;padding:1rem;border:1px solid var(--border);border-radius:1rem}
+.process-list li:before{counter-increment:step;content:counter(step);display:grid;place-items:center;background:#ffffff12;border-radius:50%;width:2.2rem;height:2.2rem;flex-shrink:0}
+.panel h3{margin-bottom:1rem}
+.panel p+p{margin-top:1rem}
+.faq-list{max-width:850px}
+.faq-list details{padding:.6rem 0}
+.contact-card{display:grid;gap:1rem}
+.quick-links{display:flex;flex-wrap:wrap;gap:1rem}
+.contact-card a{overflow-wrap:anywhere}
+.contact-card .button{justify-self:start}
+.footer{border-top:1px solid var(--border);padding:2rem 0 6rem;color:var(--muted)}
+.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:2rem}
+.footer p{margin-top:.5rem}
+.copyright{margin-top:2rem;font-size:.85rem}
+.floating-chat{position:fixed;bottom:1rem;right:1rem;z-index:25;border:1px solid #ffffff30;border-radius:99px;padding:.7rem 1rem;background:#202532;color:#fff;text-decoration:none;font-size:.85rem;box-shadow:0 8px 30px #0006}
+.skip-link{position:fixed;top:-100px;left:1rem;z-index:50;background:#fff;color:#000;padding:1rem}
+.skip-link:focus{top:1rem}
+[hidden]{display:none!important}
+
+@media(max-width:1000px){.price-grid{grid-template-columns:1fr}
+.card{display:grid;grid-template-columns:1fr 1fr;align-items:start}
+.card h3,.card .scope,.card>.button{grid-column:1/-1}
+.card .button{justify-self:start}
+.hero{gap:1.5rem}
+.nav-links{gap:.8rem}
+}
+
+@media(max-width:720px){.container{width:calc(100% - 2rem)}
+nav{flex-wrap:wrap;padding:.65rem 0}
+.nav-links{width:100%;display:flex;flex-wrap:wrap;gap:.3rem 1.2rem}
+.js .menu-toggle{display:block}
+.js .nav-links{display:none}
+.js .nav-links.open{display:flex}
+.hero{grid-template-columns:1fr;padding:2rem 0}
+.hero-image{width:min(310px,85%);margin:auto}
+.hero h1{font-size:clamp(2rem,8vw,3rem)}
+.hero-points{display:grid;gap:.4rem}
+.section{padding:2.5rem 0}
+.project-list,.split,.footer-grid{grid-template-columns:1fr}
+.card{display:flex}
+.project-header{align-items:flex-start;flex-direction:column}
+.project-header a{width:100%}
+.card,.project-card,.panel,.contact-card{padding:1.2rem}
+.gallery-controls button{min-height:44px}
+.contact-card .button{width:100%}
+.actions a{flex:1 1 200px}
+.floating-chat{bottom:max(.75rem,env(safe-area-inset-bottom));right:.75rem}
+.section{scroll-margin-top:5.5rem}
+}
+
+@media(prefers-reduced-motion:reduce){:root{scroll-behavior:auto}
+}
+
+
+
+.project-list{align-items:start}
+.project-preview{overflow:hidden;border-radius:.8rem;background:#10131b;margin-bottom:.8rem}
+.project-track{display:flex;width:max-content}
+.project-image-set{display:flex;gap:1rem;padding-right:1rem}
+.project-image-set>a{display:block;flex:0 0 auto;width:clamp(240px,35vw,460px)}
+.project-image-set img{display:block;width:100%;aspect-ratio:16/10;object-fit:contain;border-radius:.6rem}
+.project-preview.is-ready .project-track{animation:project-scroll 38s linear infinite}
+.project-card:nth-child(even) .project-track{animation-direction:reverse}
+.project-preview:hover .project-track,.project-preview:focus-within .project-track,.project-card:has(details[open]) .project-track,.project-preview.is-paused .project-track{animation-play-state:paused}
+.motion-toggle{font-size:.8rem;padding:.4rem .7rem;margin-bottom:1rem}
+@keyframes project-scroll{to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.project-preview.is-ready .project-track{animation:none}.project-preview{overflow-x:auto}.project-image-set[aria-hidden]{display:none}.motion-toggle{display:none}}
+
+/* Ecosystem switcher */
+.branch-bar{position:sticky;top:0;z-index:21;height:44px;background:#101010;border-bottom:1px solid #ffffff14}
+.branch-bar-inner{width:min(1180px,calc(100% - 2rem));height:100%;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.branch-label{color:#929292;font-size:.65rem;font-weight:600;letter-spacing:.18em}
+.branch-bar .branch-switcher{display:flex;align-items:stretch;justify-content:flex-start;height:100%;gap:6px;padding:0}
+.branch-tab{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 18px;border-bottom:2px solid transparent;background:transparent;color:#a7a7a7;font-size:.76rem;font-weight:600;white-space:nowrap;text-decoration:none}
+.branch-tab[aria-current="page"]{color:#e4eaff;border-bottom-color:#e4eaff;background:#e4eaff12}
+.topbar{top:44px}
+@media(max-width:720px){.branch-bar-inner{justify-content:center}.branch-label{display:none}.branch-bar .branch-switcher{width:100%;flex-direction:row;gap:0}.branch-tab{flex:1;padding:0 6px;font-size:.7rem}}
+/* Monochrome brand opening */
+:root{--bg:#090909;--text:#f4f4f4;--muted:#aaa;--border:#ffffff20}
+body{background:#090909;overflow-x:clip}
+.topbar{background:#090909f5}
+.topbar nav{min-height:84px;padding:10px 0}
+.brand-logo{position:relative;display:block;width:140px;height:72px;overflow:hidden;flex-shrink:0}
+.brand-logo img{position:absolute;width:128px;max-width:none;height:128px;left:6px;top:-26px}
+.hero{position:relative;isolation:isolate;grid-template-columns:minmax(0,1.2fr) minmax(0,.85fr);gap:3rem;min-height:650px;padding:70px 0 0;align-items:center}
+.hero::before{content:"";position:absolute;z-index:-2;inset:0 calc((1180px - 100vw)/2);background:radial-gradient(ellipse at 85% 36%,#ffffff12,transparent 49%),linear-gradient(120deg,#090909 28%,#181818 100%);pointer-events:none}
+.hero::after{content:"";position:absolute;z-index:-1;inset:0;opacity:.22;background-image:linear-gradient(#fff1 1px,transparent 1px),linear-gradient(90deg,#fff1 1px,transparent 1px);background-size:72px 72px;mask-image:linear-gradient(90deg,transparent,#000);pointer-events:none}
+.hero-copy{padding-bottom:48px}
+.hero .eyebrow{border:0;padding:0;background:none;letter-spacing:.16em;font-size:.65rem;color:#bcbcbc;border-radius:0}
+.hero .eyebrow::before{content:"";display:inline-block;width:7px;height:7px;margin-right:10px;background:#fff;vertical-align:middle}
+.hero h1{font-size:clamp(3rem,5.1vw,4.7rem);letter-spacing:-.055em;line-height:1.08;margin:26px 0}
+.hero h1 span{display:block;color:#999}
+.hero-copy>p{max-width:550px;font-size:.95rem;line-height:1.85}
+.hero .actions{margin:28px 0 0}
+.hero .button{background:#f5f5f5;border-color:#f5f5f5;color:#111;border-radius:5px;padding:12px 23px}
+.hero .button-secondary{border-radius:5px;padding:12px 23px;background:#ffffff06}
+.hero-visual{position:relative;min-height:385px;display:grid;place-items:center}
+.visual-frame{position:absolute;inset:20px -28px;border:1px solid #ffffff1a;transform:rotate(-12deg);border-radius:24px;pointer-events:none}
+.visual-frame:nth-child(2){inset:40px -10px;transform:rotate(10deg);border-color:#ffffff10}
+.web-preview{position:relative;width:100%;border:1px solid #ffffff35;border-radius:12px;background:linear-gradient(140deg,#292929,#111);box-shadow:0 35px 80px #0008;transform:perspective(1000px) rotateY(-9deg) rotateX(5deg);padding:0 25px 28px}
+.preview-toolbar{height:44px;border-bottom:1px solid #ffffff14;display:flex;align-items:center;gap:5px}
+.preview-toolbar i{width:5px;height:5px;background:#666;border-radius:50%}
+.preview-toolbar span{margin-left:auto;font-size:8px;color:#999;letter-spacing:.16em}
+.preview-kicker{margin-top:30px;font-size:9px;letter-spacing:.19em;color:#999}
+.preview-title{font-size:clamp(2rem,3vw,3rem);font-weight:750;letter-spacing:-.06em;line-height:1.13;margin:16px 0;color:#fff}
+.preview-line{width:72%;height:4px;background:#ffffff16;margin:9px 0}
+.preview-line.short{width:49%}
+.preview-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:26px}
+.preview-cards span{height:65px;border:1px solid #ffffff19;background:linear-gradient(135deg,#ffffff0c,transparent);border-radius:5px;display:grid;place-items:center;font-size:18px;color:#bbb}
+.visual-caption{position:absolute;bottom:0;right:0;font-size:8px;letter-spacing:.2em;color:#8b8b8b}
+.hero-foot{grid-column:1/-1;display:flex;justify-content:space-between;gap:20px;align-items:center;border-top:1px solid #ffffff20;padding:23px 0;font-size:.65rem;letter-spacing:.13em;color:#999}
+.hero-foot a{color:#ddd;text-decoration:none;white-space:nowrap}
+.hero-strip{display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid var(--border);padding:22px 0;color:#c7c7c7;font-size:.7rem;letter-spacing:.12em}
+.hero-strip b{color:#666;font-size:20px;font-weight:400}
+@media(max-width:1212px){.hero::before{left:-16px;right:-16px}}
+@media(max-width:900px){.hero{gap:1.75rem}.hero h1{font-size:3.4rem}.hero-visual{min-height:340px}.web-preview{padding:0 18px 22px}.visual-frame{inset:25px 0}.hero .eyebrow{letter-spacing:.08em}}
+.mobile-intro,.mobile-services{display:none}
+.hero h1 .mobile-intro{display:none}
+@media(max-width:720px){
+ .branch-bar{position:relative}
+ .topbar{top:0}
+ .topbar nav{min-height:88px;padding:5px 0}
+ .brand-logo{width:128px;height:72px}
+ .brand-logo img{width:120px;height:120px;left:4px;top:-24px}
+ .menu-toggle{min-height:40px;padding:0 14px;font-size:.8rem;border-radius:7px}
+ #main{scroll-margin-top:100px}
+ .section{scroll-margin-top:100px}
+ #pricing{scroll-margin-top:100px!important}
+ .hero{display:block;padding:34px 4px 28px;min-height:0}
+ .hero::before{background:radial-gradient(ellipse at 100% 0,#ffffff0c,transparent 60%),#0b0b0b}
+ .hero::after{display:none}
+ .hero h1{font-size:clamp(2rem,8.4vw,3.1rem);line-height:1.17;margin:18px 0;letter-spacing:-.045em}
+ .hero h1 .mobile-intro{display:block;color:#f4f4f4}
+ .hero h1 .mobile-intro em{font-style:normal;color:#a3a3a3}
+ .hero .desktop-intro{display:none}
+ .hero-copy{padding-bottom:0;min-width:0}
+ .hero .eyebrow{font-size:.6rem;letter-spacing:.12em}
+ .hero-copy>p.mobile-intro{display:block;font-size:.9rem;line-height:1.75;margin-bottom:0;color:#bcbcbc}
+ .hero-visual{display:none}
+ .visual-frame{inset:18px 8px 28px;transform:rotate(-6deg)}
+ .visual-frame:nth-child(2){inset:25px 10px 30px;transform:rotate(5deg)}
+ .web-preview{transform:none;padding:0 18px 20px}
+ .preview-toolbar{height:32px}
+ .preview-kicker{font-size:7px;letter-spacing:.09em;margin-top:20px}
+ .preview-title{font-size:2rem;margin:12px 0}
+ .preview-cards{gap:8px;margin-top:18px}
+ .preview-cards span{height:42px;font-size:16px}
+ .visual-caption{font-size:6px;letter-spacing:.06em;bottom:4px;right:0;left:0;text-align:center}
+ .hero .actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:24px}
+ .hero .actions a{min-height:48px;padding:12px 16px;font-size:.87rem}
+ .hero .actions .button-secondary{min-height:44px;border-color:transparent;background:transparent;color:#ccc;text-decoration:underline;text-underline-offset:5px}
+ .mobile-services{display:grid;gap:0;margin-top:24px;border-top:1px solid #ffffff20}
+ .mobile-services a{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid #ffffff16;text-decoration:none;color:#ddd;font-size:.82rem}
+ .mobile-services a span{color:#777}
+ .hero-foot,.hero-strip{display:none}
+ .floating-chat{display:none}
+}
+</style></head>
+<body>
+<div class="branch-bar"><div class="branch-bar-inner"><span class="branch-label">HỆ SINH THÁI SKILLLINK</span><nav class="branch-switcher" aria-label="Các nhánh SkillLink"><a class="branch-tab" href="../../index.html">SkillLink Event <span aria-hidden="true">↗</span></a><a class="branch-tab" href="../Pro_SkillinkTV/skilllinktv/dist/index.html">SkillLink TV <span aria-hidden="true">↗</span></a><a class="branch-tab" href="#" aria-current="page">SkillLink Website</a></nav></div></div>
+<a class="skip-link" href="#main">Đến nội dung chính</a>
+<header class="topbar">
+<div class="container">
+<nav aria-label="Điều hướng chính">
+<a class="brand brand-logo" href="#main" aria-label="SkillLink Website — Trang chủ"><img src="logo.jpg" width="1920" height="1920" alt="SkillLink Website" fetchpriority="high"></a>
+<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation">Mở menu</button>
+<div class="nav-links" id="primary-navigation">
+<a href="#pricing">Dịch vụ</a>
+<a href="#portfolio">Dự án</a>
+<a href="#process">Quy trình</a>
+<a href="#faq">Câu hỏi</a>
+<a href="#contact">Liên hệ</a>
+</div>
+</nav>
+</div>
+</header>
+<main id="main" class="container">
+<section class="hero" aria-labelledby="hero-title">
+<div class="hero-copy">
+<span class="eyebrow">SKILLLINK WEBSITE / DIGITAL SOLUTIONS</span>
+<h1 id="hero-title"><span class="desktop-intro" style="color:inherit">Từ ý tưởng.<br>Đến website.<span>Đến dấu ấn riêng.</span></span><span class="mobile-intro">Website chuyên nghiệp.<br><em>Giải pháp cho doanh nghiệp.</em></span></h1>
+<p class="desktop-intro">Thiết kế website và hệ thống quản lý cho doanh nghiệp. SkillLink đồng hành từ định hình giao diện đến triển khai giải pháp, kết nối thương hiệu với khách hàng và hoạt động vận hành.</p>
+<p class="mobile-intro">SkillLink thiết kế website và phát triển hệ thống quản lý theo nhu cầu. Đồng hành cùng doanh nghiệp từ tư vấn đến bàn giao.</p>
+<div class="actions"><a class="button" href="#contact">Trao đổi dự án ↗</a><a class="button-secondary" href="#portfolio">Khám phá dự án</a></div>
+<div class="mobile-services" aria-label="Khám phá dịch vụ"><a href="#pricing">Website giới thiệu doanh nghiệp <span aria-hidden="true">↗</span></a><a href="#pricing">Quản lý cửa hàng &amp; bán hàng <span aria-hidden="true">↗</span></a><a href="#pricing">Hệ thống quản lý nội bộ <span aria-hidden="true">↗</span></a></div>
+</div>
+<div class="hero-visual" aria-hidden="true">
+<div class="visual-frame"></div><div class="visual-frame"></div>
+<div class="web-preview"><div class="preview-toolbar"><i></i><i></i><i></i><span>SKILLLINK / WEBSITE</span></div><div class="preview-kicker">Ý TƯỞNG CỦA BẠN. GIẢI PHÁP CỦA CHÚNG TÔI.</div><div class="preview-title">DESIGN.<br>DEVELOP.<br>CONNECT.</div><div class="preview-line"></div><div class="preview-line short"></div><div class="preview-cards"><span>↗</span><span>＋</span><span>⌘</span></div></div>
+<span class="visual-caption">THIẾT KẾ CÓ ĐỊNH HƯỚNG · PHÁT TRIỂN THEO NHU CẦU</span>
+</div>
+<div class="hero-foot"><span>MỘT BỘ PHẬN THUỘC CÔNG TY TNHH SKILLLINK</span><a href="#services">KHÁM PHÁ DỊCH VỤ ↓</a></div>
+</section>
+<div class="hero-strip" aria-label="Lĩnh vực dịch vụ"><span>THIẾT KẾ WEBSITE</span><b aria-hidden="true">✳</b><span>HỆ THỐNG QUẢN LÝ</span><b aria-hidden="true">✳</b><span>GIẢI PHÁP SỐ</span></div>
+<section id="services" class="section">
+<span class="section-title">Dịch vụ</span>
+<h2>Giải pháp phù hợp với từng nhu cầu</h2>
+<p>Từ website giới thiệu thương hiệu đến hệ thống quản lý vận hành, chúng tôi tư vấn giải pháp và phạm vi triển khai theo mục tiêu của doanh nghiệp.</p>
+<div id="pricing" style="scroll-margin-top:6rem" class="price-grid">
+<article class="card featured">
+<h3>Website giới thiệu doanh nghiệp</h3>
+
+<p>Phù hợp doanh nghiệp cần giới thiệu thương hiệu, dịch vụ và sản phẩm trên một website chuyên nghiệp.</p>
+<ul class="features">
+<li>Website giới thiệu cơ bản.</li>
+<li>Hiển thị tốt trên điện thoại và máy tính.</li>
+<li>Trình bày thương hiệu, dịch vụ, dự án và thông tin liên hệ.</li>
+<li>Bàn giao mã nguồn.</li>
+</ul>
+<p class="scope">Không mặc định bao gồm trang quản trị hoặc cơ sở dữ liệu.</p>
+<a class="button" href="https://zalo.me/0332311703" target="_blank" rel="noopener noreferrer">Tư vấn website doanh nghiệp</a>
+</article>
+<article class="card">
+<h3>Website quản lý quán / cửa hàng</h3>
+
+<p>Phù hợp quán cà phê và cửa hàng cần quản lý bán hàng, nhân viên và hoạt động hằng ngày.</p>
+<ul class="features">
+<li>Quản lý sản phẩm/menu.</li>
+<li>Tạo và quản lý đơn hàng.</li>
+<li>Quản lý nhân viên.</li>
+<li>Trang quản trị và cơ sở dữ liệu.</li>
+</ul>
+<details>
+<summary>Xem chức năng có thể triển khai</summary>
+<ul class="features">
+<li>Thanh toán.</li>
+<li>Quản lý nguyên liệu/tồn kho.</li>
+<li>Voucher.</li>
+<li>Thống kê doanh thu.</li>
+</ul>
+</details>
+<p class="scope">Chức năng được lựa chọn theo quy trình vận hành thực tế. Liên hệ để được tư vấn phương án triển khai phù hợp.</p>
+<a class="button" href="https://zalo.me/0332311703" target="_blank" rel="noopener noreferrer">Tư vấn quản lý cửa hàng</a>
+</article>
+<article class="card">
+<h3>Hệ thống quản lý doanh nghiệp</h3>
+
+<p>Phù hợp doanh nghiệp cần quản lý nhân viên và hoạt động tập trung.</p>
+<ul class="features">
+<li>Quản lý nhân viên và phòng ban.</li>
+<li>Chấm công.</li>
+<li>Phân quyền.</li>
+<li>Quản lý thu chi.</li>
+</ul>
+<details>
+<summary>Xem chức năng mở rộng</summary>
+<ul class="features">
+<li>Báo cáo tổng hợp.</li>
+<li>Quản lý công việc.</li>
+<li>Mở rộng theo quy trình doanh nghiệp.</li>
+</ul>
+</details>
+<p class="scope">Giải pháp được tư vấn theo quy mô, quy trình vận hành và yêu cầu tích hợp của doanh nghiệp.</p>
+<a class="button" href="https://zalo.me/0332311703" target="_blank" rel="noopener noreferrer">Trao đổi nhu cầu doanh nghiệp</a>
+</article>
+</div>
+<div class="pricing-note">Mỗi dự án được tư vấn và lập đề xuất riêng. Phạm vi triển khai, tên miền, hosting, bảo trì và các hạng mục liên quan được thống nhất trước khi thực hiện.</div>
+</section>
+<section id="portfolio" class="section">
+<span class="section-title">Dự án tiêu biểu</span>
+<h2>Xem giao diện, tìm hiểu cách làm</h2>
+<p>Khám phá từng dự án qua dải ảnh trôi ngang. Mở chi tiết để tìm hiểu thêm và xem từng ảnh; chọn “Xem trực tiếp” ở các dự án có bản demo.</p>
+<div class="project-list">
+<article class="project-card">
+<div class="project-header">
+<h3>SkillLink Event</h3>
+<a class="button-secondary" href="https://mrhiss1703-web.github.io/skilllink-event/" target="_blank" rel="noopener noreferrer">Xem trực tiếp</a>
+</div>
+<p>Website giới thiệu dịch vụ tổ chức sự kiện, thiết bị và hoạt động của SkillLink.</p>
+<div class="project-preview" role="region" aria-label="Ảnh xem trước dự án"><div class="project-track"><div class="project-image-set"><a href="assets/skilllink-event-1.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 1 của SkillLink Event"><img src="assets/skilllink-event-1.webp" width="1400" height="781" alt="Giao diện SkillLink Event — ảnh 1" loading="lazy" decoding="async"></a></div></div></div>
+<button type="button" class="motion-toggle" hidden aria-pressed="false">Tạm dừng ảnh</button>
+<details>
+<summary>Chi tiết dự án</summary>
+<p>Giới thiệu sự kiện; trình bày thông tin và hình ảnh hoạt động.</p>
+
+<div class="gallery-controls" hidden>
+<button type="button" data-direction="-1" aria-label="Ảnh trước của SkillLink Event">← Ảnh trước</button>
+<span class="gallery-status" aria-live="polite">
+</span>
+<button type="button" data-direction="1" aria-label="Ảnh tiếp của SkillLink Event">Ảnh tiếp →</button>
+</div>
+<div class="gallery" tabindex="0" role="region" aria-label="Thư viện ảnh SkillLink Event">
+<a href="assets/skilllink-event-1.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 1 của SkillLink Event"><img src="assets/skilllink-event-1.webp" width="1400" height="781" alt="Giao diện SkillLink Event — ảnh 1" loading="lazy" decoding="async"></a>
+<a href="assets/skilllink-event-2.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 2 của SkillLink Event"><img src="assets/skilllink-event-2.webp" width="1400" height="739" alt="Giao diện SkillLink Event — ảnh 2" loading="lazy" decoding="async"></a>
+<a href="assets/skilllink-event-3.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 3 của SkillLink Event"><img src="assets/skilllink-event-3.webp" width="1400" height="771" alt="Giao diện SkillLink Event — ảnh 3" loading="lazy" decoding="async"></a>
+<a href="assets/skilllink-event-4.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 4 của SkillLink Event"><img src="assets/skilllink-event-4.webp" width="1400" height="780" alt="Giao diện SkillLink Event — ảnh 4" loading="lazy" decoding="async"></a>
+<a href="assets/skilllink-event-5.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 5 của SkillLink Event"><img src="assets/skilllink-event-5.webp" width="1400" height="772" alt="Giao diện SkillLink Event — ảnh 5" loading="lazy" decoding="async"></a>
+<a href="assets/skilllink-event-6.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 6 của SkillLink Event"><img src="assets/skilllink-event-6.webp" width="1400" height="778" alt="Giao diện SkillLink Event — ảnh 6" loading="lazy" decoding="async"></a>
+</div>
+<small>Vuốt hoặc cuộn ngang để xem ảnh; chọn ảnh để mở kích thước lớn.</small>
+</details>
+</article>
+<article class="project-card">
+<div class="project-header">
+<h3>Vĩnh Long Marathon</h3>
+<a class="button-secondary" href="https://vinh-long-marathon.vercel.app/" target="_blank" rel="noopener noreferrer">Xem trực tiếp</a>
+</div>
+<p>Website giới thiệu giải chạy Vĩnh Long Marathon và thông tin dành cho người tham gia.</p>
+<div class="project-preview" role="region" aria-label="Ảnh xem trước dự án"><div class="project-track"><div class="project-image-set"><a href="assets/marathon-1.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 1 của Vĩnh Long Marathon">
+<img src="assets/marathon-1.webp" width="1400" height="774" alt="Giao diện Vĩnh Long Marathon — ảnh 1" loading="lazy" decoding="async">
+</a></div></div></div>
+<button type="button" class="motion-toggle" hidden aria-pressed="false">Tạm dừng ảnh</button>
+<details>
+<summary>Chi tiết dự án</summary>
+<p>Giới thiệu giải chạy; trình bày nội dung và hình ảnh sự kiện.</p>
+
+<div class="gallery-controls" hidden>
+<button type="button" data-direction="-1" aria-label="Ảnh trước của Vĩnh Long Marathon">← Ảnh trước</button>
+<span class="gallery-status" aria-live="polite">
+</span>
+<button type="button" data-direction="1" aria-label="Ảnh tiếp của Vĩnh Long Marathon">Ảnh tiếp →</button>
+</div>
+<div class="gallery" tabindex="0" role="region" aria-label="Thư viện ảnh Vĩnh Long Marathon">
+<a href="assets/marathon-1.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 1 của Vĩnh Long Marathon">
+<img src="assets/marathon-1.webp" width="1400" height="774" alt="Giao diện Vĩnh Long Marathon — ảnh 1" loading="lazy" decoding="async">
+</a>
+<a href="assets/marathon-2.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 2 của Vĩnh Long Marathon">
+<img src="assets/marathon-2.webp" width="1400" height="775" alt="Giao diện Vĩnh Long Marathon — ảnh 2" loading="lazy" decoding="async">
+</a>
+<a href="assets/marathon-3.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 3 của Vĩnh Long Marathon">
+<img src="assets/marathon-3.webp" width="1400" height="772" alt="Giao diện Vĩnh Long Marathon — ảnh 3" loading="lazy" decoding="async">
+</a>
+<a href="assets/marathon-4.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 4 của Vĩnh Long Marathon">
+<img src="assets/marathon-4.webp" width="1400" height="660" alt="Giao diện Vĩnh Long Marathon — ảnh 4" loading="lazy" decoding="async">
+</a>
+<a href="assets/marathon-5.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 5 của Vĩnh Long Marathon">
+<img src="assets/marathon-5.webp" width="1400" height="778" alt="Giao diện Vĩnh Long Marathon — ảnh 5" loading="lazy" decoding="async">
+</a>
+<a href="assets/marathon-6.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 6 của Vĩnh Long Marathon">
+<img src="assets/marathon-6.webp" width="1400" height="773" alt="Giao diện Vĩnh Long Marathon — ảnh 6" loading="lazy" decoding="async">
+</a>
+</div>
+<small>Vuốt hoặc cuộn ngang để xem ảnh; chọn ảnh để mở kích thước lớn.</small>
+</details>
+</article>
+<article class="project-card">
+<div class="project-header">
+<h3>SkillLink Job</h3>
+<a class="button-secondary" href="https://mrhiss1703-web.github.io/skilllink-job/" target="_blank" rel="noopener noreferrer">Xem trực tiếp</a>
+</div>
+<p>Website giới thiệu thông tin việc làm, giúp người xem tìm hiểu cơ hội nghề nghiệp.</p>
+<div class="project-preview" role="region" aria-label="Ảnh xem trước dự án"><div class="project-track"><div class="project-image-set"><a href="assets/job-1.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 1 của SkillLink Job">
+<img src="assets/job-1.webp" width="1400" height="759" alt="Giao diện SkillLink Job — ảnh 1" loading="lazy" decoding="async">
+</a></div></div></div>
+<button type="button" class="motion-toggle" hidden aria-pressed="false">Tạm dừng ảnh</button>
+<details>
+<summary>Chi tiết dự án</summary>
+<p>Trình bày thông tin việc làm và nội dung giới thiệu.</p>
+
+<div class="gallery-controls" hidden>
+<button type="button" data-direction="-1" aria-label="Ảnh trước của SkillLink Job">← Ảnh trước</button>
+<span class="gallery-status" aria-live="polite">
+</span>
+<button type="button" data-direction="1" aria-label="Ảnh tiếp của SkillLink Job">Ảnh tiếp →</button>
+</div>
+<div class="gallery" tabindex="0" role="region" aria-label="Thư viện ảnh SkillLink Job">
+<a href="assets/job-1.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 1 của SkillLink Job">
+<img src="assets/job-1.webp" width="1400" height="759" alt="Giao diện SkillLink Job — ảnh 1" loading="lazy" decoding="async">
+</a>
+<a href="assets/job-2.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 2 của SkillLink Job">
+<img src="assets/job-2.webp" width="1400" height="768" alt="Giao diện SkillLink Job — ảnh 2" loading="lazy" decoding="async">
+</a>
+<a href="assets/job-3.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 3 của SkillLink Job">
+<img src="assets/job-3.webp" width="1400" height="774" alt="Giao diện SkillLink Job — ảnh 3" loading="lazy" decoding="async">
+</a>
+<a href="assets/job-4.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 4 của SkillLink Job">
+<img src="assets/job-4.webp" width="1400" height="766" alt="Giao diện SkillLink Job — ảnh 4" loading="lazy" decoding="async">
+</a>
+<a href="assets/job-5.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 5 của SkillLink Job">
+<img src="assets/job-5.webp" width="1400" height="762" alt="Giao diện SkillLink Job — ảnh 5" loading="lazy" decoding="async">
+</a>
+</div>
+<small>Vuốt hoặc cuộn ngang để xem ảnh; chọn ảnh để mở kích thước lớn.</small>
+</details>
+</article>
+<article class="project-card">
+<div class="project-header"><h3>Tuyết Băng Tarot</h3><span class="section-title">Website dịch vụ</span></div>
+<p>Website giới thiệu dịch vụ Tarot với tông tím nhẹ nhàng và phong cách huyền bí.</p>
+<div class="project-preview" role="region" aria-label="Ảnh xem trước dự án"><div class="project-track"><div class="project-image-set"><a href="assets/tarot-1.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 1 của Tuyết Băng Tarot"><img src="assets/tarot-1.webp" width="1400" height="571" alt="Giao diện Tuyết Băng Tarot — ảnh 1" loading="lazy" decoding="async"></a></div></div></div>
+<button type="button" class="motion-toggle" hidden aria-pressed="false">Tạm dừng ảnh</button>
+<details><summary>Chi tiết dự án</summary>
+<p>Giới thiệu các chủ đề tư vấn, hình thức trải bài, phản hồi khách hàng và khu vực liên hệ đặt lịch.</p>
+<div class="gallery-controls" hidden><button type="button" data-direction="-1" aria-label="Ảnh trước của Tuyết Băng Tarot">← Ảnh trước</button><span class="gallery-status" aria-live="polite"></span><button type="button" data-direction="1" aria-label="Ảnh tiếp của Tuyết Băng Tarot">Ảnh tiếp →</button></div>
+<div class="gallery" tabindex="0" role="region" aria-label="Thư viện ảnh Tuyết Băng Tarot">
+<a href="assets/tarot-1.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 1 của Tuyết Băng Tarot"><img src="assets/tarot-1.webp" width="1400" height="571" alt="Giao diện Tuyết Băng Tarot — ảnh 1" loading="lazy" decoding="async"></a>
+<a href="assets/tarot-2.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 2 của Tuyết Băng Tarot"><img src="assets/tarot-2.webp" width="1400" height="775" alt="Giao diện Tuyết Băng Tarot — ảnh 2" loading="lazy" decoding="async"></a>
+<a href="assets/tarot-3.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 3 của Tuyết Băng Tarot"><img src="assets/tarot-3.webp" width="1400" height="782" alt="Giao diện Tuyết Băng Tarot — ảnh 3" loading="lazy" decoding="async"></a>
+<a href="assets/tarot-4.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 4 của Tuyết Băng Tarot"><img src="assets/tarot-4.webp" width="1400" height="781" alt="Giao diện Tuyết Băng Tarot — ảnh 4" loading="lazy" decoding="async"></a>
+<a href="assets/tarot-5.webp" target="_blank" rel="noopener noreferrer" aria-label="Mở ảnh 5 của Tuyết Băng Tarot"><img src="assets/tarot-5.webp" width="1400" height="769" alt="Giao diện Tuyết Băng Tarot — ảnh 5" loading="lazy" decoding="async"></a>
+</div><small>Vuốt hoặc cuộn ngang để xem ảnh; chọn ảnh để mở kích thước lớn.</small>
+</details></article>
+</div>
+</section>
+
+<section id="process" class="section">
+<span class="section-title">Quy trình &amp; hỗ trợ</span>
+<h2>Bốn bước từ ý tưởng đến bàn giao</h2>
+<div class="split">
+<ol class="process-list">
+<li>Trao đổi nhu cầu.</li>
+<li>Chốt phạm vi, chi phí và tiến độ.</li>
+<li>Làm demo, nhận phản hồi và hoàn thiện.</li>
+<li>Bàn giao, hướng dẫn và hỗ trợ.</li>
+</ol>
+<div class="panel" id="support">
+<h3>Hỗ trợ sau bàn giao</h3>
+<p>Trong 7 ngày sau bàn giao, chúng tôi hỗ trợ sửa lỗi thuộc phạm vi đã thống nhất và điều chỉnh nhỏ nội dung đã bàn giao.</p>
+<p>Chức năng mới, đổi thiết kế lớn hoặc yêu cầu ngoài phạm vi được trao đổi và báo phí riêng. Sau thời gian hỗ trợ ban đầu, có thể tiếp tục bảo trì theo thỏa thuận riêng.</p>
+</div>
+</div>
+</section>
+<section id="faq" class="section">
+<span class="section-title">Giải đáp</span>
+<h2>Câu hỏi thường gặp</h2>
+<div class="faq-list">
+<details>
+<summary>Doanh nghiệp nên chọn giải pháp nào?</summary>
+<p>Website giới thiệu phù hợp nhu cầu xây dựng thương hiệu và trình bày dịch vụ. Nếu cần quản lý bán hàng hoặc vận hành nội bộ, chúng tôi sẽ tư vấn hệ thống theo quy trình của doanh nghiệp.</p>
+</details>
+<details>
+<summary>Tên miền và máy chủ được triển khai thế nào?</summary>
+<p>Chúng tôi hỗ trợ kiểm tra tên miền và tư vấn hosting/server phù hợp. Các hạng mục này được trình bày trong đề xuất triển khai để doanh nghiệp lựa chọn.</p>
+</details>
+<details>
+<summary>Bao lâu hoàn thành?</summary>
+<p>Website giới thiệu cơ bản dự kiến 3–7 ngày sau khi nhận đủ nội dung và thống nhất yêu cầu. Hệ thống quản lý có tiến độ riêng theo phạm vi đã chốt.</p>
+</details>
+<details>
+<summary>Được chỉnh sửa và hỗ trợ thế nào?</summary>
+<p>Trong 7 ngày sau bàn giao, chúng tôi hỗ trợ sửa lỗi thuộc phạm vi đã thống nhất và điều chỉnh nhỏ nội dung đã bàn giao. Chức năng mới, đổi thiết kế lớn hoặc yêu cầu ngoài phạm vi được trao đổi và báo phí riêng. Sau thời gian hỗ trợ ban đầu, có thể tiếp tục bảo trì theo thỏa thuận riêng.</p>
+</details>
+<details>
+<summary>Có bàn giao mã nguồn không?</summary>
+<p>Có. Chúng tôi bàn giao mã nguồn và hướng dẫn sử dụng sau khi hoàn thành theo phạm vi đã thống nhất.</p>
+</details>
+<details>
+<summary>Cần chuẩn bị gì trước khi làm?</summary>
+<p>Bạn chuẩn bị mục tiêu, nội dung, ảnh, thông tin liên hệ và ngân sách dự kiến. Với hệ thống quản lý, hãy mô tả quy trình hiện tại và các chức năng cần ưu tiên.</p>
+</details>
+</div>
+</section>
+<section id="contact" class="section">
+<span class="section-title">Liên hệ</span>
+<h2>Bạn đang cần website như thế nào?</h2>
+<p>Gửi SkillLink Website nhu cầu, ngân sách dự kiến và một mẫu website bạn thích để bắt đầu trao đổi.</p>
+<div class="contact-card">
+<a class="button" href="https://zalo.me/0332311703" target="_blank" rel="noopener noreferrer">Trao đổi qua Zalo</a>
+<p>
+<strong>Email:</strong> <a href="mailto:mrhiss1703@gmail.com">mrhiss1703@gmail.com</a>
+</p>
+<p>
+<strong>Điện thoại:</strong> <a href="tel:+84332311703">+84 332 311 703</a>
+</p>
+<p>
+<strong>Địa chỉ:</strong> Cần Thơ, Việt Nam</p>
+<div class="quick-links">
+<a href="https://zalo.me/0332311703" target="_blank" rel="noopener noreferrer">Zalo</a>
+<a href="https://www.facebook.com/profile.php?id=61595756244411" target="_blank" rel="noopener noreferrer">Facebook</a>
+</div>
+</div>
+</section>
+</main>
+<footer class="footer">
+<div class="container footer-grid">
+<div>
+<a class="brand" href="#main">SkillLink Website</a>
+<p>Thiết kế website và hệ thống quản lý cho doanh nghiệp.</p>
+</div>
+<div>
+<strong>Khám phá</strong>
+<p>
+<a href="#pricing">Dịch vụ</a>
+</p>
+<p>
+<a href="#portfolio">Dự án</a>
+</p>
+<p>
+<a href="#process">Quy trình</a>
+</p>
+</div>
+<div>
+<strong>Liên hệ</strong>
+<p>
+<a href="mailto:mrhiss1703@gmail.com">mrhiss1703@gmail.com</a>
+</p>
+<p>
+<a href="tel:+84332311703">+84 332 311 703</a>
+</p>
+<p>
+<a href="https://github.com/mrhiss1703">Github</a>
+</p>
+</div>
+</div>
+<p class="container copyright">© 2026 Công ty TNHH SkillLink. All rights reserved.</p>
+</footer>
+<a class="floating-chat" href="https://zalo.me/0332311703" target="_blank" rel="noopener noreferrer">Trao đổi qua Zalo ↗</a>
+<script>
+const toggle = document.querySelector('.menu-toggle');
+const links = document.querySelector('.nav-links');
+function closeMenu() { links.classList.remove('open'); toggle.setAttribute('aria-expanded','false'); toggle.textContent='Mở menu'; }
+toggle.addEventListener('click', () => { const open = toggle.getAttribute('aria-expanded') !== 'true'; links.classList.toggle('open',open); toggle.setAttribute('aria-expanded',String(open)); toggle.textContent=open?'Đóng menu':'Mở menu'; });
+links.querySelectorAll('a').forEach(a => a.addEventListener('click',closeMenu));
+document.addEventListener('click', e => { if (!e.target.closest('nav')) closeMenu(); });
+document.addEventListener('keydown', e => { if(e.key==='Escape' && toggle.getAttribute('aria-expanded')==='true'){ closeMenu(); toggle.focus(); } });
+window.addEventListener('resize', () => { if(innerWidth>720) closeMenu(); });
+document.documentElement.classList.add('js');
+
+document.querySelectorAll('.project-card').forEach(card => {
+ const preview=card.querySelector('.project-preview'), set=preview.querySelector('.project-image-set');
+ set.replaceChildren(...Array.from(card.querySelectorAll('.gallery > a'), a=>a.cloneNode(true)));
+ const copy=set.cloneNode(true); copy.setAttribute('aria-hidden','true'); copy.inert=true;
+ copy.querySelectorAll('a').forEach(a=>a.tabIndex=-1);
+ preview.querySelector('.project-track').append(copy); preview.classList.add('is-ready');
+ const button=card.querySelector('.motion-toggle'); button.hidden=false;
+ button.addEventListener('click',()=>{const paused=preview.classList.toggle('is-paused');button.setAttribute('aria-pressed',String(paused));button.textContent=paused?'Tiếp tục trôi ảnh':'Tạm dừng ảnh';});
+});
+
+document.querySelectorAll('.gallery').forEach(gallery => {
+ const controls=gallery.previousElementSibling, buttons=controls.querySelectorAll('button'), status=controls.querySelector('.gallery-status');
+ const update=()=>{ const index=Math.max(0,Math.min(gallery.children.length-1,Math.round(gallery.scrollLeft/(gallery.clientWidth+16)))); status.textContent=`${index+1} / ${gallery.children.length}`; buttons[0].disabled=index===0; buttons[1].disabled=index===gallery.children.length-1; };
+ buttons.forEach(button=>button.addEventListener('click',()=>gallery.scrollBy({left:Number(button.dataset.direction)*(gallery.clientWidth+16),behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'})));
+ gallery.addEventListener('scroll',update,{passive:true}); gallery.closest('details').addEventListener('toggle',update); window.addEventListener('resize',update); controls.hidden=false; update();
+});
+</script>
+</body>
+</html>
