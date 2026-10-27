@@ -1517,6 +1517,10 @@
       transition: 0.2s;
     }
     .lightbox-prev { left: 24px; }
+    .lightbox button[hidden] { display: none; }
+    .project[role="button"] { cursor: pointer; }
+    .project[role="button"]:focus-visible { outline: 2px solid var(--gold); outline-offset: 5px; }
+    .album-count { position: absolute; top: 16px; right: 16px; padding: 5px 12px; border-radius: 20px; background: #000b; color: #fff; font-size: .8rem; pointer-events: none; }
     .lightbox-next { right: 24px; }
     .lightbox-prev:hover, .lightbox-next:hover {
       background: var(--gold);
@@ -1835,6 +1839,7 @@
           <button class="filter" data-filter="corporate">Doanh nghiệp</button>
           <button class="filter" data-filter="opening">Khai trương</button>
           <button class="filter" data-filter="community">Cộng đồng</button>
+          <button class="filter" data-filter="graduation">Đồ án tốt nghiệp</button>
         </div>
         <div class="project-grid">
           <article class="project" data-type="music">
@@ -1851,13 +1856,6 @@
               <h3>YO LIGHT 2025</h3>
             </div>
           </article>
-          <article class="project" data-type="opening">
-            <img loading="lazy" src="assets/images/projects/khai-truong-go.webp" alt="Lễ khai trương siêu thị GO tại Đồng Tháp">
-            <div class="project-info">
-              <small>Khai trương · Đồng Tháp</small>
-              <h3>Khai trương siêu thị GO!</h3>
-            </div>
-          </article>
           <article class="project" data-type="corporate">
             <img loading="lazy" src="assets/images/projects/tri-an-ton-tay-nam.webp" alt="Lễ tri ân khách hàng Tôn Tây Nam">
             <div class="project-info">
@@ -1870,20 +1868,6 @@
             <div class="project-info">
               <small>Chương trình thực tế · Cần Thơ</small>
               <h3>Kokomi Hút Show</h3>
-            </div>
-          </article>
-          <article class="project" data-type="community">
-            <img loading="lazy" src="assets/images/projects/hoa-khoi-agu.webp" alt="Khán giả đêm chung kết Hoa khôi Đại học An Giang">
-            <div class="project-info">
-              <small>Chung kết · An Giang</small>
-              <h3>Hoa khôi Đại học An Giang</h3>
-            </div>
-          </article>
-          <article class="project" data-type="community">
-            <img loading="lazy" src="assets/images/projects/chay-bo-tiet-kiem-dien.webp" alt="Sự kiện chạy bộ tiết kiệm điện thành thói quen">
-            <div class="project-info">
-              <small>Chạy bộ · Cần Thơ</small>
-              <h3>Tiết kiệm điện thành thói quen</h3>
             </div>
           </article>
           <article class="project" data-type="corporate">
@@ -2214,6 +2198,7 @@
     </div>
   </div>
 
+  <script src="assets/js/event-albums.js?v=20261027-4"></script>
   <script src="assets/js/portal-config.js?v=20261014"></script>
   <script type="module" src="assets/js/auth.js?v=20261014"></script>
   <script>
@@ -2270,13 +2255,35 @@
       rentalMore.textContent = expanded ? 'Thu gọn' : 'Xem thêm';
     });
 
+    // Merge album photos into existing events; only create cards for new events.
+    (window.SKILLLINK_EVENT_ALBUMS || []).forEach(album => {
+      let card = [...document.querySelectorAll('.project')].find(item => item.querySelector('h3')?.textContent.trim() === album.title);
+      if (!card) {
+        card = document.createElement('article');
+        card.className = 'project';
+        card.dataset.type = album.category;
+        const image = document.createElement('img');
+        image.loading = 'lazy';
+        image.src = album.images[0];
+        image.alt = album.title;
+        const info = document.createElement('div');
+        info.className = 'project-info';
+        const label = document.createElement('small');
+        label.textContent = album.label;
+        const title = document.createElement('h3');
+        title.textContent = album.title;
+        info.append(label, title);
+        card.append(image, info);
+        document.querySelector('.project-grid').append(card);
+      }
+      card.albumImages = album.images;
+    });
+
     const projectImageUpgrades = {
       'HYPE FEST 2025': 'Ảnh mới cần thay/Đại nhạc hội · 19.04.2025.jpg',
       'YO LIGHT 2025': 'Ảnh mới cần thay/Âm nhạc YOLIGHT 2025 · 16.04.2025.jpg',
-      'Khai trương siêu thị GO!': 'Ảnh mới cần thay/Khai chương siệu thị GO.webp',
       'Tôn Tây Nam': 'Ảnh mới cần thay/Tôn Tây Nam.png',
-      'Kokomi Hút Show': 'Ảnh mới cần thay/KOKOMI hút show.png',
-      'Hoa khôi Đại học An Giang': 'Ảnh mới cần thay/Chung kết Miss AGU.jpg'
+      'Kokomi Hút Show': 'Ảnh mới cần thay/KOKOMI hút show.png'
     };
     document.querySelectorAll('.project').forEach(card => {
       const title = card.querySelector('h3')?.textContent;
@@ -2433,18 +2440,25 @@
     const projectImages = [...document.querySelectorAll('.project img')];
     let lightboxTrigger = null;
     let lightboxIndex = 0;
+    let albumImages = [];
+    let albumTitle = '';
 
     function renderLightbox() {
-      const img = projectImages[lightboxIndex];
-      if (!img) return;
-      lightboxImg.src = img.currentSrc || img.src;
-      lightboxImg.alt = img.alt;
-      lightboxCaption.textContent = img.closest('.project')?.querySelector('h3')?.textContent || img.alt;
+      const src = albumImages[lightboxIndex];
+      if (!src) return;
+      lightboxImg.src = src;
+      lightboxImg.alt = `${albumTitle} – Ảnh ${lightboxIndex + 1}`;
+      lightboxCaption.textContent = `${albumTitle} · ${lightboxIndex + 1} / ${albumImages.length}`;
+      lightbox.querySelector('.lightbox-prev').hidden = albumImages.length < 2;
+      lightbox.querySelector('.lightbox-next').hidden = albumImages.length < 2;
     }
 
     function openLightbox(img) {
-      lightboxTrigger = img;
-      lightboxIndex = projectImages.indexOf(img);
+      lightboxTrigger = img.closest('.project');
+      const card = img.closest('.project');
+      albumTitle = card.querySelector('h3').textContent;
+      albumImages = [...new Set([img.getAttribute('src'), ...(card.albumImages || [])])];
+      lightboxIndex = 0;
       renderLightbox();
       lightbox.classList.add('open');
       lightbox.setAttribute('aria-hidden', 'false');
@@ -2453,7 +2467,7 @@
     }
 
     function moveLightbox(direction) {
-      lightboxIndex = (lightboxIndex + direction + projectImages.length) % projectImages.length;
+      lightboxIndex = (lightboxIndex + direction + albumImages.length) % albumImages.length;
       renderLightbox();
     }
 
@@ -2468,11 +2482,17 @@
     }
 
     projectImages.forEach(img => {
-      img.tabIndex = 0;
-      img.setAttribute('role', 'button');
-      img.setAttribute('aria-label', `Phóng to ảnh dự án: ${img.alt}`);
-      img.addEventListener('click', () => openLightbox(img));
-      img.addEventListener('keydown', e => {
+      const card = img.closest('.project');
+      card.tabIndex = 0;
+      card.setAttribute('role', 'button');
+      card.setAttribute('aria-label', `Xem album ${card.querySelector('h3').textContent}`);
+      const count = new Set([img.getAttribute('src'), ...(card.albumImages || [])]).size;
+      const badge = document.createElement('span');
+      badge.className = 'album-count';
+      badge.textContent = `${count} ảnh`;
+      card.append(badge);
+      card.addEventListener('click', () => openLightbox(img));
+      card.addEventListener('keydown', e => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           openLightbox(img);
@@ -2481,6 +2501,19 @@
     });
 
     lightboxClose?.addEventListener('click', closeLightbox);
+    lightbox?.addEventListener('keydown', e => {
+      if (e.key !== 'Tab') return;
+      const buttons = [...lightbox.querySelectorAll('button')].filter(button => !button.hidden);
+      const first = buttons[0], last = buttons[buttons.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+    let swipeStart = null;
+    lightboxImg?.addEventListener('touchstart', e => { swipeStart = e.touches[0].clientX; }, { passive: true });
+    lightboxImg?.addEventListener('touchend', e => {
+      if (swipeStart !== null && Math.abs(e.changedTouches[0].clientX - swipeStart) > 50) moveLightbox(e.changedTouches[0].clientX < swipeStart ? 1 : -1);
+      swipeStart = null;
+    }, { passive: true });
     lightbox?.querySelector('.lightbox-prev')?.addEventListener('click', () => moveLightbox(-1));
     lightbox?.querySelector('.lightbox-next')?.addEventListener('click', () => moveLightbox(1));
     lightbox?.addEventListener('click', e => {
