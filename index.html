@@ -1638,42 +1638,11 @@
       .gold-bottom-bar { padding-bottom: 20px; }
       .btn-zalo-big { width: 100%; padding: 0 20px; }
     }
-    /* Branch switcher preview — restore point in .local-backups/branch-tabs-preview */
-    .branch-bar { height: 44px; background: #101010; border-bottom: 1px solid rgba(255,255,255,.08); }
-    .branch-bar-inner { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-    .branch-label { color: #929292; font-size: .65rem; font-weight: 600; letter-spacing: .18em; }
-    .branch-switcher { display: flex; align-items: stretch; height: 100%; gap: 6px; }
-    .branch-tab { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 18px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: #a7a7a7; font: inherit; font-size: .76rem; font-weight: 600; white-space: nowrap; }
-    .branch-tab[aria-current="page"] { color: var(--gold); border-bottom-color: var(--gold); background: rgba(255,184,0,.07); }
-    .branch-tab:disabled { opacity: 1; cursor: default; }
-    .branch-tab .branch-arrow { font-size: .9rem; color: #777; }
-    .hero-content { padding-top: 174px; }
-    html { scroll-padding-top: 144px; }
-    @media (max-width: 860px) {
-      .header .nav-links { top: 130px; height: calc(100vh - 130px); height: calc(100dvh - 130px); }
-    }
-    @media (max-width: 640px) {
-      .branch-bar-inner { justify-content: center; }
-      .branch-label { display: none; }
-      .branch-switcher { width: 100%; gap: 0; }
-      .branch-tab { flex: 1; padding: 0 8px; font-size: .72rem; }
-      .hero-content { padding-top: 164px; }
-    }
   </style>
 </head>
 <body>
   <!-- Header Navigation (Reference Image 1) -->
   <header class="header" id="header">
-    <div class="branch-bar">
-      <div class="container branch-bar-inner">
-        <span class="branch-label">HỆ SINH THÁI SKILLLINK</span>
-        <nav class="branch-switcher" aria-label="Các nhánh SkillLink">
-          <a class="branch-tab" href="#top" aria-current="page">SkillLink Event</a>
-          <a class="branch-tab" href="HỆ SINH THÁI/Pro_SkillinkTV/skilllinktv/dist/index.html">SkillLink TV <span class="branch-arrow" aria-hidden="true">↗</span></a>
-          <a class="branch-tab" href="HỆ SINH THÁI/Pro_SkillLinkWebsite/index.html">SkillLink Website <span class="branch-arrow" aria-hidden="true">↗</span></a>
-        </nav>
-      </div>
-    </div>
     <div class="container nav">
       <a class="brand" href="#top" aria-label="SkillLink - Về đầu trang">
         <img src="LOGO ÁO trắng NỀN đen.png" alt="SkillLink Event Agency">
